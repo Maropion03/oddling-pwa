@@ -20,6 +20,7 @@ export function CreateFlow() {
   const [answers, setAnswers] = useState<OnboardingAnswer[]>([]);
   const [freeText, setFreeText] = useState("");
   const [phase, setPhase] = useState<"questions" | "generating" | "reveal">("questions");
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const input = useMemo<OnboardingInput>(() => ({ choices: answers, freeText }), [answers, freeText]);
   const preview = useMemo(() => phase === "reveal" ? generateAvatar(input) : null, [input, phase]);
   const [name, setName] = useState("");
@@ -43,16 +44,26 @@ export function CreateFlow() {
     }
     setPhase("generating");
     window.setTimeout(() => {
-      const avatar = generateAvatar(input);
-      const rebuilding = window.sessionStorage.getItem("oddling:rebuild") === "1";
-      if (rebuilding) {
-        rebuildAvatar(input);
-        window.sessionStorage.removeItem("oddling:rebuild");
-      } else {
-        createAvatar(input);
-      }
-      setName(avatar.name);
-      setPhase("reveal");
+      void (async () => {
+        try {
+          const rebuilding = window.sessionStorage.getItem("oddling:rebuild") === "1";
+          let avatar;
+          if (rebuilding) {
+            const rebuilt = await rebuildAvatar(input);
+            window.sessionStorage.removeItem("oddling:rebuild");
+            if (!rebuilt) throw new Error("重建机会已经不可用");
+            avatar = generateAvatar(input);
+          } else {
+            avatar = await createAvatar(input);
+          }
+          setName(avatar.name);
+          setGenerationError(null);
+          setPhase("reveal");
+        } catch (error) {
+          setGenerationError(error instanceof Error ? error.message : "生成失败，请重试");
+          setPhase("questions");
+        }
+      })();
     }, 2200);
   }
 
@@ -148,6 +159,7 @@ export function CreateFlow() {
       </AnimatePresence>
 
       <footer className="create-actions">
+        {generationError && <p className="form-error" role="alert">{generationError}</p>}
         <button className="btn btn--ghost" disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))}><ArrowLeft size={18}/>上一题</button>
         <button className="btn btn--primary" disabled={!canContinue} onClick={next}>
           {step === 3 ? <><Dices size={18}/>开始生成</> : <>下一题<ArrowRight size={18}/></>}

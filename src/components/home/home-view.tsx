@@ -31,16 +31,16 @@ export function HomeView() {
   }
   const avatarName = avatar.name;
 
-  function submit(event: React.FormEvent) {
+  async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (answer.trim().length < 1 || answer.length > 60 || todayEntry) return;
-    const entry = submitDailyAnswer(answer);
+    const entry = await submitDailyAnswer(answer);
     setRevealed(entry);
     setAnswer("");
   }
 
   async function share() {
-    const shareRecord = makeShare();
+    const shareRecord = await makeShare();
     const url = `${window.location.origin}/p/${shareRecord.id}`;
     if (navigator.share) {
       try {
@@ -75,7 +75,7 @@ export function HomeView() {
   }
 
   async function copyShare() {
-    const shareRecord = makeShare();
+    const shareRecord = await makeShare();
     const url = `${window.location.origin}/p/${shareRecord.id}`;
     await copyText(url);
     setShareUrl(url);
@@ -108,7 +108,7 @@ export function HomeView() {
           <div className="daily-panel__head">
             <span className="daily-number">DAY {String(state.entries.length + (todayEntry ? 0 : 1)).padStart(2, "0")}</span>
             {!completed && (
-              <button className="icon-action" onClick={rerollQuestion} disabled={Boolean(state.rerolls[today])} title={state.rerolls[today] ? "今天已经换过题" : "换一道题"}>
+              <button className="icon-action" onClick={() => void rerollQuestion()} disabled={Boolean(state.rerolls[today])} title={state.rerolls[today] ? "今天已经换过题" : "换一道题"}>
                 <RefreshCw size={18}/><span>{state.rerolls[today] ? "已换题" : "换一题"}</span>
               </button>
             )}

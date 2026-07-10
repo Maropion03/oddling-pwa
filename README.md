@@ -127,5 +127,51 @@
 - [x] 完成首版品牌命名
 - [x] 输出完整产品设计规格并完成内部自审
 - [x] 用户最终审阅产品设计规格
-- [ ] 完成 MVP 开发与完整性测试
+- [x] 完成 MVP 开发与完整性测试
 - [ ] 创建 GitHub 仓库并部署 PWA
+
+## 本地运行
+
+```bash
+npm install
+npm run dev
+```
+
+未配置环境变量时，Oddling 会明确进入本地演示模式，完整状态保存在浏览器中。复制 `.env.example` 为 `.env.local` 并填写 Supabase 配置后，会启用匿名账号、云端持久化和跨设备公开分享。
+
+## 质量门禁
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run test:db
+npm run build
+npm run test:e2e
+npm audit --omit=dev
+```
+
+端到端测试覆盖 Chromium、Firefox、WebKit、Android Chrome 与 iPhone Safari 五个项目，包括创建、每日变异、收藏册、设置、分享隐私、访客幂等互动、PWA 离线壳、无障碍与响应式溢出检查。
+
+## 云端配置
+
+1. 在 Supabase 创建项目。
+2. 在 SQL Editor 执行 `supabase/migrations/20260710150000_initial_schema.sql`。
+3. 将 `.env.example` 中的三个 Supabase 变量配置到本地与 Vercel。
+4. 可选配置 OpenAI-compatible LLM；缺省或调用失败时自动使用确定性生成引擎。
+
+## 发布形态
+
+Oddling 首版是响应式 PWA，无需提交 App Store 或小程序审核：
+
+- iPhone / iPad：Safari 打开线上地址，点“分享”→“添加到主屏幕”。
+- Android：Chrome 打开线上地址，点“安装应用”或浏览器菜单中的“添加到主屏幕”。
+- macOS / Windows：Chrome 或 Edge 地址栏右侧选择“安装”。
+
+Vercel 发布：
+
+```bash
+npx vercel --prod
+```
+
+部署后的 HTTPS、manifest 与 service worker 会让浏览器提供安装入口。完整的跨设备分享依赖 Supabase；未配置时仍可体验单设备本地循环。

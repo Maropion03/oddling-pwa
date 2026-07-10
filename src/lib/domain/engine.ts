@@ -25,6 +25,13 @@ const BACK = ["fin", "wings", "shell", "flag", "tail", "shadow"];
 const TEXTURES = ["freckles", "stripes", "dots", "patch", "stars", "scribble"];
 const HANDHELD = ["spoon", "key", "flower", "lamp", "tiny-flag", "snack"];
 
+export const MUTATION_TOKENS = {
+  head: HEAD,
+  back: BACK,
+  texture: TEXTURES,
+  handheld: HANDHELD,
+} satisfies Record<MutationSlot, string[]>;
+
 const MUTATION_LABELS: Record<string, string> = {
   sprout: "偷偷长高的芽",
   antenna: "接收杂音的天线",
@@ -168,10 +175,15 @@ function deriveDelta(answer: string, question: DailyQuestion): Partial<Traits> {
 }
 
 function mutationPool(slot: MutationSlot): string[] {
-  if (slot === "head") return HEAD;
-  if (slot === "back") return BACK;
-  if (slot === "texture") return TEXTURES;
-  return HANDHELD;
+  return MUTATION_TOKENS[slot];
+}
+
+export function isValidMutationToken(slot: MutationSlot, token: string): boolean {
+  return MUTATION_TOKENS[slot].includes(token);
+}
+
+export function mutationLabel(token: string): string {
+  return MUTATION_LABELS[token] ?? "无法命名的小变化";
 }
 
 function chooseMutation(avatar: Avatar, answer: string, date: string): Mutation {
@@ -188,7 +200,7 @@ function chooseMutation(avatar: Avatar, answer: string, date: string): Mutation 
     date,
     slot,
     token,
-    label: MUTATION_LABELS[token],
+    label: mutationLabel(token),
     previousToken,
   };
 }

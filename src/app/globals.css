@@ -158,7 +158,7 @@ button {
   max-width: 12ch;
   margin: 0;
   font-family: Impact, "Arial Black", "PingFang SC", sans-serif;
-  font-size: clamp(3.1rem, 10vw, 8.5rem);
+  font-size: clamp(3.1rem, 8vw, 6.8rem);
   font-weight: 900;
   letter-spacing: -0.065em;
   line-height: 0.88;
@@ -289,6 +289,14 @@ button {
   color: var(--ink-soft);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.72rem;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--coral-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 .app-frame {
@@ -552,7 +560,7 @@ button {
   z-index: 2;
   display: grid;
   align-content: center;
-  gap: clamp(18px, 3vw, 30px);
+  gap: clamp(16px, 2vw, 24px);
   min-height: calc(100svh - 78px);
   padding: clamp(52px, 7vw, 96px) var(--page-pad);
   border-right: var(--line);
@@ -1157,6 +1165,8 @@ button {
 .settings-item strong { font-size: 0.95rem; }
 .settings-item span { color: var(--ink-soft); font-size: 0.74rem; line-height: 1.45; }
 .settings-badge { padding: 7px 10px; border: 2px solid var(--ink); background: var(--yellow); color: #202124 !important; font-family: ui-monospace, monospace; font-weight: 900; transform: rotate(3deg); }
+.settings-item--email { align-items: start; }
+.email-bind { display: grid !important; grid-template-columns: minmax(180px, 1fr) auto; gap: 8px !important; min-width: min(100%, 360px); }
 
 .segmented { display: grid; grid-template-columns: repeat(3, auto); padding: 4px; border: 2px solid var(--ink); border-radius: 12px; }
 .segmented button { min-height: 36px; padding: 0 10px; border-radius: 8px; background: transparent; cursor: pointer; font-size: 0.72rem; font-weight: 800; }

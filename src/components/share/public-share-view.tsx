@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Cookie, Fingerprint, MousePointer2, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
@@ -8,7 +8,7 @@ import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { Wordmark } from "@/components/brand/wordmark";
 import { StickerCard } from "@/components/sticker/sticker-card";
 import { useOddling } from "@/components/providers/oddling-provider";
-import type { GuestAction, GuestInteraction } from "@/lib/domain/types";
+import type { GuestAction, GuestInteraction, ShareRecord } from "@/lib/domain/types";
 
 const actions: Array<{ id: GuestAction; label: string; note: string; icon: typeof MousePointer2 }> = [
   { id: "poke", label: "戳一下", note: "看看它会不会装没看见", icon: MousePointer2 },
@@ -17,11 +17,29 @@ const actions: Array<{ id: GuestAction; label: string; note: string; icon: typeo
 ];
 
 export function PublicShareView({ shareId }: { shareId: string }) {
-  const { hydrated, findShare, interactWithShare } = useOddling();
+  const { hydrated, cloudConfigured, findShare, interactWithShare } = useOddling();
   const [interaction, setInteraction] = useState<GuestInteraction | null>(null);
-  const share = findShare(shareId);
+  const [remoteShare, setRemoteShare] = useState<ShareRecord | null>(null);
+  const [remoteLoading, setRemoteLoading] = useState(false);
+  const localShare = findShare(shareId);
+  const share = localShare ?? remoteShare;
 
-  if (!hydrated) return <div className="loading-screen"><span className="loading-mark"/></div>;
+  useEffect(() => {
+    if (!cloudConfigured || localShare) return;
+    let cancelled = false;
+    void (async () => {
+      setRemoteLoading(true);
+      const response = await fetch(`/api/public/shares/${encodeURIComponent(shareId)}`);
+      if (response.ok) {
+        const body = await response.json() as { token: string; snapshot: ShareRecord["snapshot"]; createdAt: string };
+        if (!cancelled) setRemoteShare({ id: body.token, snapshot: body.snapshot, createdAt: body.createdAt });
+      }
+      if (!cancelled) setRemoteLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [cloudConfigured, localShare, shareId]);
+
+  if (!hydrated || remoteLoading) return <div className="loading-screen"><span className="loading-mark"/></div>;
 
   if (!share) {
     return (
@@ -34,9 +52,25 @@ export function PublicShareView({ shareId }: { shareId: string }) {
 
   const snapshot = share.snapshot;
 
-  function act(action: GuestAction) {
-    const result = interactWithShare(shareId, action);
-    if (result) setInteraction(result);
+  async function act(action: GuestAction) {
+    if (localShare) {
+      const result = await interactWithShare(shareId, action);
+      if (result) setInteraction(result);
+      return;
+    }
+    let visitorId = window.localStorage.getItem("oddling:visitor:v1");
+    if (!visitorId) {
+      visitorId = crypto.randomUUID();
+      window.localStorage.setItem("oddling:visitor:v1", visitorId);
+    }
+    const response = await fetch(`/api/public/shares/${encodeURIComponent(shareId)}/interact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId, action }),
+    });
+    if (!response.ok) return;
+    const body = await response.json() as { interaction: GuestInteraction };
+    setInteraction(body.interaction);
   }
 
   return (
@@ -63,7 +97,7 @@ export function PublicShareView({ shareId }: { shareId: string }) {
             <h2>你想对它做什么？</h2>
             <p className="lede">每位访客只能选一次。它会自己决定怎么回应。</p>
             <div className="guest-action-list">
-              {actions.map((action) => { const Icon = action.icon; return <button key={action.id} onClick={() => act(action.id)}><Icon/><span><strong>{action.label}</strong><small>{action.note}</small></span></button>; })}
+              {actions.map((action) => { const Icon = action.icon; return <button key={action.id} onClick={() => void act(action.id)}><Icon/><span><strong>{action.label}</strong><small>{action.note}</small></span></button>; })}
             </div>
           </div>
         )}
