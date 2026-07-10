@@ -1,0 +1,75 @@
+<style>
+  .spectrum-intro { max-width: 820px; margin-bottom: 26px; }
+  .spectrum { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+  .variant { padding:0; overflow:hidden; border-radius:22px; }
+  .stage { height:330px; position:relative; overflow:hidden; padding:18px; }
+  .variant .card-body { min-height:150px; }
+  .dial { margin-top:10px; font-size:12px; opacity:.64; }
+  .sweet { background:#f7e9ee; color:#31262d; }
+  .sweet::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 85% 15%,#ffd957 0 11%,transparent 11.5%),radial-gradient(circle at 8% 82%,#80c9bb 0 15%,transparent 15.5%); }
+  .plush { position:absolute; width:168px; height:174px; left:50%; top:50%; transform:translate(-50%,-45%) rotate(-3deg); background:#ff859f; border-radius:46% 54% 44% 56% / 48% 46% 54% 52%; box-shadow:inset -14px -18px 0 rgba(117,40,74,.12),0 18px 32px rgba(117,40,74,.16); }
+  .plush::before,.plush::after { content:""; position:absolute; top:68px; width:12px; height:18px; border-radius:50%; background:#31262d; }
+  .plush::before { left:49px; }.plush::after { right:49px; }
+  .smile { position:absolute; z-index:2; width:32px; height:15px; border-bottom:4px solid #31262d; border-radius:0 0 50% 50%; left:50%; top:169px; transform:translateX(-50%); }
+  .sweet-label { position:absolute; z-index:3; left:18px; top:18px; padding:7px 11px; background:#fff9f5; border:1.5px solid #31262d; border-radius:999px; font:800 11px ui-rounded,sans-serif; transform:rotate(-4deg); }
+  .balanced { background:#f2eddb; color:#1d2027; }
+  .balanced::before { content:""; position:absolute; width:150px; height:150px; right:-34px; top:-24px; background:#ff6f59; border-radius:43% 57% 62% 38%; transform:rotate(18deg); }
+  .sheet { position:relative; z-index:2; margin:18px 12px 0; background:#fffdf6; border:2px solid #1d2027; border-radius:18px; padding:18px 16px 22px; box-shadow:7px 8px 0 #1d2027; transform:rotate(-2deg); }
+  .sheet h4 { margin:0 0 9px; font:900 27px/.95 ui-rounded,"Arial Rounded MT Bold",sans-serif; letter-spacing:-.045em; }
+  .sheet p { margin:0; max-width:82%; font:600 12px/1.55 system-ui,sans-serif; }
+  .stamps { display:flex; gap:6px; margin-top:24px; }
+  .stamps span { padding:5px 8px; border:1.5px solid #1d2027; border-radius:999px; font:800 9px system-ui,sans-serif; }
+  .buddy { position:absolute; z-index:4; right:19px; bottom:26px; width:78px; height:78px; border-radius:40% 60% 47% 53%; background:#f3cb42; border:2px solid #1d2027; box-shadow:4px 5px 0 #1d2027; display:grid; place-items:center; font:900 19px ui-monospace,monospace; transform:rotate(6deg); }
+  .edgy { background:#20211e; color:#f3eee1; }
+  .edgy::before { content:""; position:absolute; inset:0; opacity:.18; background-image:url('https://picsum.photos/seed/xerox-paper-grain/600/700'); background-size:cover; mix-blend-mode:screen; }
+  .acid { position:absolute; width:152px; height:152px; right:-12px; top:60px; background:#ceff45; clip-path:polygon(50% 0,61% 30%,88% 12%,72% 42%,100% 50%,70% 59%,88% 88%,59% 71%,50% 100%,40% 70%,12% 88%,29% 59%,0 50%,29% 41%,12% 12%,40% 30%); transform:rotate(10deg); }
+  .xerox { position:relative; z-index:2; margin-top:16px; width:78%; padding:15px; background:#f4eee0; color:#20211e; border:2px solid #f4eee0; transform:rotate(-4deg); box-shadow:10px 10px 0 #ff5e45; }
+  .xerox h4 { margin:0; font:900 30px/.87 Arial Black,Arial,sans-serif; text-transform:uppercase; letter-spacing:-.075em; }
+  .xerox p { font:700 11px/1.45 ui-monospace,monospace; margin:14px 0 0; }
+  .glitch-face { position:absolute; z-index:4; right:22px; bottom:24px; width:88px; height:98px; background:#ff5e45; border:2px solid #f4eee0; clip-path:polygon(12% 0,100% 9%,88% 100%,0 86%); display:grid; place-items:center; font:900 25px ui-monospace,monospace; color:#20211e; transform:rotate(7deg); }
+  @media(max-width:900px){.spectrum{grid-template-columns:1fr}.stage{height:290px}}
+</style>
+
+<div class="spectrum-intro">
+  <h2>柔软亚文化，要偏甜还是偏野？</h2>
+  <p class="subtitle">三个方向共享同一个基因，只调整甜度、反差和亚文化浓度。</p>
+</div>
+
+<div class="cards spectrum">
+  <div class="card variant" data-choice="sweet-plush" onclick="toggleSelect(this)">
+    <div class="stage sweet">
+      <div class="sweet-label">SOFT MODE</div>
+      <div class="plush"></div><div class="smile"></div>
+    </div>
+    <div class="card-body">
+      <h3>A1. 软萌玩偶</h3>
+      <p>圆润、亲密、低攻击性。容易让人喜欢，但也更容易落入普通萌系产品。</p>
+      <div class="dial">甜度 9 / 亚文化 3 / 反差 2</div>
+    </div>
+  </div>
+
+  <div class="card variant" data-choice="balanced-sticker" onclick="toggleSelect(this)">
+    <div class="stage balanced">
+      <div class="sheet"><h4>怪可爱<br>贴纸刊物</h4><p>像一本会回应你的独立小杂志。</p><div class="stamps"><span>ODD</span><span>SOFT</span><span>YOURS</span></div></div>
+      <div class="buddy">:P</div>
+    </div>
+    <div class="card-body">
+      <h3>A2. 怪可爱贴纸刊物</h3>
+      <p>奶油纸张、黑色粗边、珊瑚红和钴蓝。好玩但不幼稚，适合多数玩具概念。</p>
+      <div class="dial">甜度 6 / 亚文化 7 / 反差 6</div>
+    </div>
+  </div>
+
+  <div class="card variant" data-choice="edgy-zine" onclick="toggleSelect(this)">
+    <div class="stage edgy">
+      <div class="acid"></div>
+      <div class="xerox"><h4>Cute<br>But<br>Wrong</h4><p>LOW-FI SOCIAL TOY<br>FOR STRANGE PEOPLE</p></div>
+      <div class="glitch-face">;)</div>
+    </div>
+    <div class="card-body">
+      <h3>A3. 复印机 Zine</h3>
+      <p>粗粝、叛逆、反精致。记忆点最强，但会筛掉偏主流和轻松审美的用户。</p>
+      <div class="dial">甜度 3 / 亚文化 10 / 反差 9</div>
+    </div>
+  </div>
+</div>

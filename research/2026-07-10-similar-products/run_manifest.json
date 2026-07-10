@@ -1,0 +1,20 @@
+{
+  "version": "3.0.0",
+  "query": "AI 数字分身养成玩具竞品功能、留存机制、社交传播、风险与 MVP 取舍",
+  "mode": "standard",
+  "started_at": "2026-07-10T10:42:35.323775+00:00",
+  "finished_at": null,
+  "assumptions": [],
+  "provider_config": {
+    "primary": "search-cli",
+    "scholarly": null
+  },
+  "report_dir": "/Users/medusa/Documents/开发/怪可爱分身/research/2026-07-10-similar-products",
+  "artifact_paths": {
+    "sources": "sources.jsonl",
+    "evidence": "evidence.jsonl",
+    "claims": "claims.jsonl",
+    "report": "report.md"
+  },
+  "continuation": null
+}

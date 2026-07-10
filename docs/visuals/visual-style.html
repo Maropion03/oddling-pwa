@@ -1,0 +1,96 @@
+<style>
+  .style-intro { max-width: 860px; margin-bottom: 28px; }
+  .style-intro strong { color: var(--text); }
+  .style-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .style-card { padding: 0; overflow: hidden; border-radius: 22px; }
+  .style-card .card-image { height: 320px; padding: 18px; position: relative; overflow: hidden; }
+  .style-card .card-body { min-height: 160px; }
+  .style-card .card-body p { line-height: 1.55; }
+  .style-card .meta { margin-top: 12px; font-size: 12px; opacity: .66; letter-spacing: .02em; }
+  .mood-a { background: #f1eddc; color: #202124; }
+  .mood-a::before { content: ""; position: absolute; width: 150px; height: 150px; border-radius: 46% 54% 61% 39%; background: #ff6f59; top: -36px; right: -30px; transform: rotate(17deg); }
+  .mood-a::after { content: ""; position: absolute; width: 92px; height: 92px; border-radius: 38% 62% 44% 56%; background: #2b59c3; bottom: 32px; left: -22px; transform: rotate(-12deg); }
+  .a-ticket { position: relative; z-index: 2; background: rgba(255,255,255,.7); border: 2px solid #202124; border-radius: 18px; padding: 16px; transform: rotate(-2deg); box-shadow: 7px 8px 0 #202124; }
+  .a-ticket h4 { margin: 0 0 8px; font: 800 27px/1.02 ui-rounded, "Arial Rounded MT Bold", sans-serif; letter-spacing: -.04em; }
+  .a-chip { display: inline-block; padding: 6px 10px; margin: 5px 4px 0 0; border: 1.5px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .a-face { position: absolute; z-index: 3; right: 26px; bottom: 28px; width: 82px; height: 82px; background: #f6ce4b; border: 2px solid #202124; border-radius: 46% 54% 48% 52%; box-shadow: 4px 5px 0 #202124; display: grid; place-items: center; font: 900 22px ui-rounded, sans-serif; transform: rotate(5deg); }
+  .mood-b { background: #e8e2d4; color: #312f2a; }
+  .b-paper { position: relative; height: 100%; background: #f5f0e6; border: 1px solid rgba(49,47,42,.22); padding: 26px 24px; box-shadow: 0 18px 45px rgba(66,53,35,.14); }
+  .b-paper::after { content: ""; position: absolute; inset: 0; opacity: .14; background-image: url('https://picsum.photos/seed/rice-paper-texture/520/720'); background-size: cover; mix-blend-mode: multiply; pointer-events: none; }
+  .b-mark { width: 34px; height: 34px; display: grid; place-items: center; background: #aa4735; color: #fff7ea; font: 700 16px serif; }
+  .b-paper h4 { margin: 50px 0 12px; font: 500 31px/1.12 Georgia, "Songti SC", serif; letter-spacing: -.035em; }
+  .b-paper p { width: 85%; font: 14px/1.75 Georgia, "Songti SC", serif; color: #666056; }
+  .b-branch { position: absolute; right: 18px; bottom: 6px; width: 88px; height: 150px; border-right: 2px solid #66735a; transform: rotate(17deg); opacity: .72; }
+  .b-branch::before, .b-branch::after { content: ""; position: absolute; width: 36px; height: 18px; border-radius: 100% 0 100% 0; background: #78856c; }
+  .b-branch::before { right: -1px; top: 44px; transform: rotate(28deg); }
+  .b-branch::after { right: 1px; top: 88px; transform: rotate(202deg); }
+  .mood-c { background: #171816; color: #f4f1e9; }
+  .mood-c::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 80% 16%, rgba(210,255,69,.18), transparent 23%), linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px); background-size: auto, 22px 22px, 22px 22px; }
+  .c-console { position: relative; z-index: 2; height: 100%; border: 1px solid rgba(244,241,233,.24); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+  .c-top { display: flex; justify-content: space-between; font: 700 10px/1.2 ui-monospace, monospace; color: #d2ff45; letter-spacing: .08em; }
+  .c-console h4 { margin: 0; max-width: 88%; font: 900 34px/.92 Arial, Helvetica, sans-serif; letter-spacing: -.07em; text-transform: uppercase; }
+  .c-orbit { position: absolute; right: 20px; top: 72px; width: 112px; height: 112px; border: 14px solid #ff5f45; border-radius: 50%; transform: rotate(-9deg); }
+  .c-orbit::after { content: ""; position: absolute; width: 34px; height: 34px; background: #d2ff45; right: -20px; bottom: 8px; }
+  .c-controls { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+  .c-lines { display: grid; gap: 6px; }
+  .c-lines span { height: 2px; background: rgba(244,241,233,.55); display: block; }
+  .c-button { width: 54px; height: 54px; border-radius: 50%; background: #d2ff45; color: #171816; display: grid; place-items: center; font: 900 18px Arial, sans-serif; }
+  @media (max-width: 900px) { .style-grid { grid-template-columns: 1fr; } .style-card .card-image { height: 280px; } }
+</style>
+
+<div class="style-intro">
+  <h2>哪一种最像你下一款玩具？</h2>
+  <p class="subtitle">先选视觉人格，不讨论具体功能。可以选一个，也可以说希望融合哪两个方向。</p>
+</div>
+
+<div class="cards style-grid">
+  <div class="card style-card" data-choice="soft-subculture" onclick="toggleSelect(this)">
+    <div class="card-image mood-a">
+      <div class="a-ticket">
+        <h4>柔软亚文化<br>Soft Subculture</h4>
+        <span class="a-chip">贴纸感</span><span class="a-chip">怪可爱</span><span class="a-chip">可收藏</span>
+      </div>
+      <div class="a-face">:P</div>
+    </div>
+    <div class="card-body">
+      <h3>A. 柔软亚文化</h3>
+      <p>奶油底色、手作边缘、怪可爱角色和大胆色块。适合有个性、能截图传播的社交玩具。</p>
+      <div class="meta">VARIANCE 9 / MOTION 8 / DENSITY 3</div>
+    </div>
+  </div>
+
+  <div class="card style-card" data-choice="poetic-object" onclick="toggleSelect(this)">
+    <div class="card-image mood-b">
+      <div class="b-paper">
+        <div class="b-mark">拾</div>
+        <h4>诗性自然物</h4>
+        <p>安静、克制、有时间感。让一次短暂交互像收到一件私人小物。</p>
+        <div class="b-branch"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 诗性自然物</h3>
+      <p>纸张、印章、植物和含蓄排版。情绪价值强，但与「拾光」已有语言较接近。</p>
+      <div class="meta">VARIANCE 7 / MOTION 5 / DENSITY 2</div>
+    </div>
+  </div>
+
+  <div class="card style-card" data-choice="digital-toy" onclick="toggleSelect(this)">
+    <div class="card-image mood-c">
+      <div class="c-console">
+        <div class="c-top"><span>PLAY MODE</span><span>READY</span></div>
+        <div class="c-orbit"></div>
+        <h4>Digital<br>Toy Machine</h4>
+        <div class="c-controls">
+          <div class="c-lines"><span></span><span style="width:72%"></span><span style="width:44%"></span></div>
+          <div class="c-button">GO</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. 数码玩具机</h3>
+      <p>深色舞台、酸性色彩、像素秩序和强反馈。适合节奏快、动作明确的互动实验。</p>
+      <div class="meta">VARIANCE 9 / MOTION 9 / DENSITY 4</div>
+    </div>
+  </div>
+</div>
