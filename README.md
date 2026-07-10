@@ -128,7 +128,9 @@
 - [x] 输出完整产品设计规格并完成内部自审
 - [x] 用户最终审阅产品设计规格
 - [x] 完成 MVP 开发与完整性测试
-- [ ] 创建 GitHub 仓库并部署 PWA
+- [x] 创建 GitHub 仓库并部署 PWA
+
+线上体验：<https://oddling-pwa.vercel.app>
 
 ## 本地运行
 
