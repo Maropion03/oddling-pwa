@@ -25,7 +25,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     assertQuery(existingError);
     if (existing) return NextResponse.json({
       idempotent: true,
-      interaction: { action: existing.action, response: existing.response_text, sticker: existing.sticker_payload },
+      interaction: {
+        shareId: token,
+        visitorId: input.visitorId,
+        action: existing.action,
+        response: existing.response_text,
+        sticker: existing.sticker_payload,
+        createdAt: existing.created_at,
+      },
     });
 
     const share: ShareRecord = {

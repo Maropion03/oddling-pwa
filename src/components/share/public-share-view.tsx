@@ -29,10 +29,15 @@ export function PublicShareView({ shareId }: { shareId: string }) {
     let cancelled = false;
     void (async () => {
       setRemoteLoading(true);
-      const response = await fetch(`/api/public/shares/${encodeURIComponent(shareId)}`);
+      const visitorId = window.localStorage.getItem("oddling:visitor:v1");
+      const visitorQuery = visitorId ? `?visitorId=${encodeURIComponent(visitorId)}` : "";
+      const response = await fetch(`/api/public/shares/${encodeURIComponent(shareId)}${visitorQuery}`);
       if (response.ok) {
-        const body = await response.json() as { token: string; snapshot: ShareRecord["snapshot"]; createdAt: string };
-        if (!cancelled) setRemoteShare({ id: body.token, snapshot: body.snapshot, createdAt: body.createdAt });
+        const body = await response.json() as { token: string; snapshot: ShareRecord["snapshot"]; createdAt: string; interaction?: GuestInteraction | null };
+        if (!cancelled) {
+          setRemoteShare({ id: body.token, snapshot: body.snapshot, createdAt: body.createdAt });
+          setInteraction(body.interaction ?? null);
+        }
       }
       if (!cancelled) setRemoteLoading(false);
     })();
