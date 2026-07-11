@@ -7,6 +7,7 @@ import { toPng } from "html-to-image";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { getPersonalityRead } from "@/lib/domain/engine";
 import type { Avatar, DailyEntry } from "@/lib/domain/types";
+import { plainText } from "@/lib/text";
 
 type Format = "portrait" | "square";
 
@@ -95,9 +96,9 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
             <div className="result-share-card__copy">
               <p className="result-share-card__name">{avatar.name}</p>
               {isDaily && entry ? (
-                <><p className="result-share-card__line">{entry.response}</p><strong>{entry.mutation.label}</strong><span>{entry.sticker.title} · {entry.sticker.subtitle}</span></>
+                <><p className="result-share-card__line">{plainText(entry.response)}</p><strong>{plainText(entry.mutation.label)}</strong><span>{plainText(entry.sticker.title)} {plainText(entry.sticker.subtitle)}</span></>
               ) : (
-                <><strong>{personality.title}</strong><p className="result-share-card__line">{personality.description}</p><div className="result-share-card__traits">{personality.highlights.map((trait) => <span key={trait.key}>{trait.label} {trait.value}</span>)}</div></>
+                <><strong>{plainText(personality.title)}</strong><p className="result-share-card__line">{plainText(personality.description)}</p><div className="result-share-card__traits">{personality.highlights.map((trait) => <span key={trait.key}>{plainText(trait.label)} {trait.value}</span>)}</div></>
               )}
             </div>
           </motion.div>
@@ -106,7 +107,7 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
 
       <div className="result-image-maker__actions">
         <button type="button" className="btn btn--primary" onClick={() => void save()} disabled={status === "saving" || isFlipping}><Download size={18}/>{isFlipping ? "翻页中" : status === "saving" ? "正在导出" : status === "saved" ? "已保存" : "保存图片"}</button>
-        {status === "error" && <p className="form-error" role="alert"><ImageIcon size={16}/>图片生成失败，请重试。</p>}
+        {status === "error" && <p className="form-error" role="alert"><ImageIcon size={16}/>图片生成失败 请重试</p>}
       </div>
     </section>
   );

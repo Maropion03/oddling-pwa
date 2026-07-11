@@ -53,7 +53,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .eq("visitor_rate_hash", visitorRateHash)
       .gte("created_at", oneHourAgo);
     assertQuery(rateError, "检查互动频率失败");
-    if ((count ?? 0) >= 8) throw new ApiError(429, "互动太频繁了，请稍后再试");
+    if ((count ?? 0) >= 8) throw new ApiError(429, "互动太频繁了 请稍后再试");
     const { error: insertError } = await admin.from("guest_interactions").insert({
       share_id: row.id,
       visitor_id: input.visitorId,

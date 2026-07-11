@@ -10,6 +10,7 @@ import { StickerCard } from "@/components/sticker/sticker-card";
 import { ResultImageMaker } from "@/components/share/result-image-maker";
 import { useOddling } from "@/components/providers/oddling-provider";
 import type { DailyEntry } from "@/lib/domain/types";
+import { compactDate, plainText } from "@/lib/text";
 
 export function HomeView() {
   const router = useRouter();
@@ -110,7 +111,7 @@ export function HomeView() {
         <section className="nest-stage">
           <div className="nest-stage__top">
             <div>
-              <p className="eyebrow">YOUR ODDLING · {today.replaceAll("-", ".")}</p>
+              <p className="eyebrow">YOUR ODDLING {compactDate(today)}</p>
               <h1 className="page-title">{avatar.name}</h1>
             </div>
             <span className="status-strip"><span className="status-dot"/>{cloudConfigured ? "已同步" : "本机保存"}</span>
@@ -120,7 +121,7 @@ export function HomeView() {
             <AvatarFigure parts={avatar.parts} name={avatar.name} size="medium" />
             <span className="orbit-label orbit-label--right">{avatar.traits.oddness > 58 ? "怪度偏高" : "暂时克制"}</span>
           </div>
-          <p className="avatar-caption">{completed?.response ?? "它今天还没有形成新的意见。"}</p>
+          <p className="avatar-caption">{completed ? plainText(completed.response) : "它今天还没有形成新的意见"}</p>
         </section>
 
         <section className="daily-panel">
@@ -149,17 +150,17 @@ export function HomeView() {
                       >
                         <span className="completion-mark"><Check size={26}/></span>
                         <p className="eyebrow">TODAY IS ARCHIVED</p>
-                        <h2>{completed.question}</h2>
-                        <blockquote>“{completed.answer}”</blockquote>
-                        <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{completed.mutation.label}</strong></div>
+                        <h2>{plainText(completed.question)}</h2>
+                        <blockquote>{completed.answer}</blockquote>
+                        <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{plainText(completed.mutation.label)}</strong></div>
                         <StickerCard sticker={completed.sticker} compact />
                         <div className="daily-share-actions">
                           <button className="btn btn--blue" onClick={share}><Share2 size={18}/>发给一个熟人</button>
                           <button className="btn" onClick={copyShare}>{sharing === "copied" ? <><Check size={18}/>链接已复制</> : <><Copy size={18}/>复制链接</>}</button>
                         </div>
-                        {shareUrl && <a className="share-preview-link" href={shareUrl}>预览好友看到的页面 →</a>}
-                        <p className="privacy-note">分享只包含角色快照和贴纸，不包含你的回答。</p>
-                        <button className="btn btn--primary" onClick={() => setArchivePage(2)}>去保存 →</button>
+                        {shareUrl && <a className="share-preview-link" href={shareUrl}>预览好友看到的页面</a>}
+                        <p className="privacy-note">分享只包含角色快照和贴纸不包含你的回答</p>
+                        <button className="btn btn--primary" onClick={() => setArchivePage(2)}>去保存</button>
                       </motion.div>
                     )}
                     {archivePage === 2 && (
@@ -173,7 +174,7 @@ export function HomeView() {
                       >
                         <p className="eyebrow">READY TO POST</p>
                         <ResultImageMaker avatar={avatar} entry={completed}/>
-                        <button className="btn" onClick={() => setArchivePage(1)}>← 返回</button>
+                        <button className="btn" onClick={() => setArchivePage(1)}>返回</button>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -181,15 +182,15 @@ export function HomeView() {
               </motion.div>
             ) : (
               <motion.form key="question" className="daily-form" onSubmit={submit} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}>
-                <p className="eyebrow">TODAY&apos;S WEIRD QUESTION</p>
-                <h2>{todayQuestion.prompt}</h2>
+                <p className="eyebrow">TODAY WEIRD QUESTION</p>
+                <h2>{plainText(todayQuestion.prompt)}</h2>
                 <div className="field">
                   <label className="sr-only" htmlFor="daily-answer">今天的回答</label>
-                  <textarea id="daily-answer" className="textarea" maxLength={60} placeholder="一句话就好。" value={answer} disabled={dailyAction !== "idle"} onChange={(event) => setAnswer(event.target.value)} />
+                  <textarea id="daily-answer" className="textarea" maxLength={60} placeholder="一句话就好" value={answer} disabled={dailyAction !== "idle"} onChange={(event) => setAnswer(event.target.value)} />
                   <span className="field-meta"><span>提交后今天不能重答</span><span>{answer.length}/60</span></span>
                 </div>
                 <button className="btn btn--primary" disabled={!answer.trim() || dailyAction !== "idle"} type="submit">{dailyAction === "submitting" ? "正在消化" : "喂给它"} <Send size={18}/></button>
-                <p className="privacy-note">没有连续签到。忘记回来时，它只会继续待着。</p>
+                <p className="privacy-note">没有连续签到 忘记回来时它只会继续待着</p>
               </motion.form>
             )}
           </AnimatePresence>

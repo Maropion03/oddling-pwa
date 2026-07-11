@@ -161,7 +161,7 @@ export function getPersonalityRead(traits: Traits): PersonalityRead {
   const secondaryCopy = PERSONALITY_COPY[secondary.key];
   return {
     title: primaryCopy.title,
-    description: `它更常${primaryCopy.verb}，也会用${secondaryCopy.verb}的方式处理今天。`,
+    description: `它更常${primaryCopy.verb} 也会用${secondaryCopy.verb}的方式处理今天`,
     highlights,
   };
 }
@@ -257,20 +257,20 @@ export function applyMutation(avatar: Avatar, mutation: Mutation): Avatar {
 function responseFor(avatar: Avatar, mutation: Mutation, answer: string): string {
   const templates = avatar.traits.oddness > 58
     ? [
-        `收到。${mutation.label}已经擅自开始工作。`,
-        `这个答案有点响，我长出了${mutation.label}。`,
-        `先别解释，${mutation.label}说它都懂。`,
+        `收到 ${mutation.label}已经擅自开始工作`,
+        `这个答案有点响 我长出了${mutation.label}`,
+        `先别解释 ${mutation.label}说它都懂`,
       ]
     : avatar.traits.softness > 58
       ? [
-          `我把这句话收好了，也把${mutation.label}留下。`,
-          `今天不用急，${mutation.label}会陪我们慢一点。`,
-          `听见了。这里刚好多出一个${mutation.label}。`,
+          `我把这句话收好了 也把${mutation.label}留下`,
+          `今天不用急 ${mutation.label}会陪我们慢一点`,
+          `听见了 这里刚好多出一个${mutation.label}`,
         ]
       : [
-          `记录完毕。副作用是${mutation.label}。`,
-          `答案有效，${mutation.label}已到账。`,
-          `好。今天就用${mutation.label}处理这件事。`,
+          `记录完毕 副作用是${mutation.label}`,
+          `答案有效 ${mutation.label}已到账`,
+          `好 今天就用${mutation.label}处理这件事`,
         ];
   return pick(templates, hashString(`${avatar.seed}:${answer}`));
 }
@@ -329,7 +329,7 @@ export function createPublicSnapshot(avatar: Avatar, sticker: Sticker | null): P
     },
     parts: avatar.parts,
     mutationCount: avatar.mutationCount,
-    publicLine: avatar.traits.oddness > 58 ? "正在认真地长歪。" : "今天也在缓慢成为自己。",
+    publicLine: avatar.traits.oddness > 58 ? "正在认真地长歪" : "今天也在缓慢成为自己",
     sticker,
   };
 }
@@ -352,9 +352,9 @@ export function createGuestInteraction(options: {
   const now = options.now ?? new Date();
   const seed = hashString(`${options.share.id}:${options.visitorId}:${options.action}`);
   const actionCopy: Record<GuestAction, string[]> = {
-    poke: ["它晃了两下，决定把这当作问候。", "它假装没注意，然后偷偷靠近了一点。"],
-    feed: ["它收下奇怪食物，并郑重藏进不存在的口袋。", "它吃了一口，眼神变得很有意见。"],
-    label: ["标签贴歪了，但它坚持这样更准确。", "它读完标签，宣布今天暂时接受这个身份。"],
+    poke: ["它晃了两下 决定把这当作问候", "它假装没注意 然后偷偷靠近了一点"],
+    feed: ["它收下奇怪食物 并郑重藏进不存在的口袋", "它吃了一口 眼神变得很有意见"],
+    label: ["标签贴歪了 但它坚持这样更准确", "它读完标签 宣布今天暂时接受这个身份"],
   };
   const labels: Record<GuestAction, string> = {
     poke: "被轻轻戳过",

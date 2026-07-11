@@ -11,7 +11,7 @@ export default function OfflinePage() {
         <WifiOff size={44} aria-hidden="true" />
         <Wordmark compact />
         <h1 className="page-title">信号被分身吃掉了</h1>
-        <p className="lede">应用外壳仍然在。恢复网络后，再回来回答今天的怪问题。</p>
+        <p className="lede">应用外壳仍然在 恢复网络后再回来回答今天的怪问题</p>
         <Link className="btn btn--primary" href="/home">重新看看</Link>
       </section>
     </main>

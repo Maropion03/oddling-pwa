@@ -1,12 +1,13 @@
 import type { PublicAvatarSnapshot } from "@/lib/domain/types";
+import { plainText } from "@/lib/text";
 
 export function sharePresentation(snapshot: PublicAvatarSnapshot) {
   const mutation = snapshot.sticker?.subtitle;
-  const title = mutation ? `${snapshot.name} 长出了${mutation}` : `${snapshot.name} 正在认真地长歪`;
+  const title = mutation ? `${snapshot.name} 长出了${plainText(mutation)}` : `${snapshot.name} 正在认真地长歪`;
   const description = mutation
-    ? `${snapshot.publicLine} 今天留下了「${mutation}」。`
-    : `${snapshot.publicLine} 来看看它会变成什么样。`;
-  return { title, description, mutation: mutation ?? "暂时没有新变化" };
+    ? `${plainText(snapshot.publicLine)} 今天留下了${plainText(mutation)}`
+    : `${plainText(snapshot.publicLine)} 来看看它会变成什么样`;
+  return { title, description, mutation: plainText(mutation ?? "暂时没有新变化") };
 }
 
 export function ogAvatarDataUrl(snapshot: PublicAvatarSnapshot) {

@@ -9,10 +9,11 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { StickerCard } from "@/components/sticker/sticker-card";
 import { useOddling } from "@/components/providers/oddling-provider";
 import type { GuestAction, GuestInteraction, ShareRecord } from "@/lib/domain/types";
+import { plainText } from "@/lib/text";
 
 const actions: Array<{ id: GuestAction; label: string; note: string; icon: typeof MousePointer2 }> = [
   { id: "poke", label: "戳一下", note: "看看它会不会装没看见", icon: MousePointer2 },
-  { id: "feed", label: "投喂怪东西", note: "来源不明，但大概能吃", icon: Cookie },
+  { id: "feed", label: "投喂怪东西", note: "来源不明但大概能吃", icon: Cookie },
   { id: "label", label: "贴个标签", note: "给它一个临时定义", icon: Fingerprint },
 ];
 
@@ -53,7 +54,7 @@ export function PublicShareView({ shareId }: { shareId: string }) {
     return (
       <main className="public-empty">
         <Wordmark compact />
-        <div className="empty-state"><h1 className="page-title">这个分身溜走了</h1><p>分享可能过期，或者它根本不想被找到。</p><Link className="btn btn--primary" href="/create">放出我自己的</Link></div>
+        <div className="empty-state"><h1 className="page-title">这个分身溜走了</h1><p>分享可能过期 或者它根本不想被找到</p><Link className="btn btn--primary" href="/create">放出我自己的</Link></div>
       </main>
     );
   }
@@ -67,7 +68,7 @@ export function PublicShareView({ shareId }: { shareId: string }) {
     try {
       if (localShare) {
         const result = await interactWithShare(shareId, action);
-        if (!result) throw new Error("这次互动没有送达，请再试一次。");
+        if (!result) throw new Error("这次互动没有送达 请再试一次");
         setInteraction(result);
         return;
       }
@@ -81,11 +82,11 @@ export function PublicShareView({ shareId }: { shareId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ visitorId, action }),
       });
-      if (!response.ok) throw new Error("这次互动没有送达，请再试一次。");
+      if (!response.ok) throw new Error("这次互动没有送达 请再试一次");
       const body = await response.json() as { interaction: GuestInteraction };
       setInteraction(body.interaction);
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "这次互动没有送达，请再试一次。");
+      setActionError(error instanceof Error ? error.message : "这次互动没有送达 请再试一次");
     } finally {
       setPendingAction(null);
     }
@@ -93,11 +94,11 @@ export function PublicShareView({ shareId }: { shareId: string }) {
 
   return (
     <main className="public-share">
-      <header className="public-share__nav"><Wordmark compact/><span className="status-strip"><span className="status-dot"/>好友分享 · 无需登录</span></header>
+      <header className="public-share__nav"><Wordmark compact/><span className="status-strip"><span className="status-dot"/>好友分享 无需登录</span></header>
       <section className="public-stage">
-        <p className="eyebrow">A FRIEND&apos;S ODDLING</p>
+        <p className="eyebrow">FRIEND ODDLING</p>
         <AvatarFigure parts={snapshot.parts} name={snapshot.name}/>
-        <div className="public-name"><span>它叫</span><h1>{snapshot.name}</h1><p>{snapshot.publicLine}</p></div>
+        <div className="public-name"><span>它叫</span><h1>{snapshot.name}</h1><p>{plainText(snapshot.publicLine)}</p></div>
         {snapshot.sticker && <div className="public-sticker"><StickerCard sticker={snapshot.sticker} compact/></div>}
       </section>
       <section className="guest-action">
@@ -105,16 +106,16 @@ export function PublicShareView({ shareId }: { shareId: string }) {
         {interaction ? (
           <motion.div key="result" className="guest-result" initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -10 }} transition={{ duration: 0.32, ease: "easeOut" }}>
             <p className="eyebrow">IT RESPONDED</p>
-            <h2>{interaction.response}</h2>
+            <h2>{plainText(interaction.response)}</h2>
             <StickerCard sticker={interaction.sticker}/>
-            <p className="privacy-note">这次互动不会改变好友分身的永久属性。</p>
+            <p className="privacy-note">这次互动不会改变好友分身的永久属性</p>
             <Link className="btn btn--primary" href="/create"><Sparkles size={18}/>我也放一个出来</Link>
           </motion.div>
         ) : (
           <motion.div key="choice" className="guest-choice" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -10 }} transition={{ duration: 0.26, ease: "easeOut" }}>
             <p className="eyebrow">CHOOSE ONE THING</p>
-            <h2>你想对它做什么？</h2>
-            <p className="lede">每位访客只能选一次。它会自己决定怎么回应。</p>
+            <h2>你想对它做什么</h2>
+            <p className="lede">每位访客只能选一次 它会自己决定怎么回应</p>
             <div className="guest-action-list" aria-busy={Boolean(pendingAction)}>
               {actions.map((action, index) => {
                 const Icon = action.icon;
@@ -141,7 +142,7 @@ export function PublicShareView({ shareId }: { shareId: string }) {
                     whileTap={reduceMotion || pendingAction ? undefined : { scale: 0.985 }}
                   >
                     <motion.span className="guest-action__icon" animate={isPending && !reduceMotion ? iconMotion : { x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.42, ease: "easeInOut" }}><Icon/></motion.span>
-                    <span className="guest-action__copy"><strong>{isPending ? "它正在决定…" : action.label}</strong><small>{action.note}</small></span>
+                    <span className="guest-action__copy"><strong>{isPending ? "它正在决定" : action.label}</strong><small>{action.note}</small></span>
                   </motion.button>
                 );
               })}

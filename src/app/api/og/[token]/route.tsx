@@ -20,7 +20,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
         <div style={{ width: "55%", display: "flex", flexDirection: "column", padding: "64px 0 64px 72px", justifyContent: "space-between" }}>
           <div style={{ display: "flex", fontSize: 28, fontWeight: 900, letterSpacing: -1 }}>● ODDLING <span style={{ color: "#FF6F59", marginLeft: 8 }}>↘</span></div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "#D94E3F", fontSize: 24, fontWeight: 800, letterSpacing: 2 }}>A FRIEND&apos;S ODDLING</div>
+            <div style={{ color: "#D94E3F", fontSize: 24, fontWeight: 800, letterSpacing: 2 }}>FRIEND ODDLING</div>
             <div style={{ fontSize: 76, fontWeight: 900, letterSpacing: -5, lineHeight: 1.05, marginTop: 16 }}>{presentation.title}</div>
             <div style={{ fontSize: 30, lineHeight: 1.4, marginTop: 26 }}>{presentation.description}</div>
           </div>

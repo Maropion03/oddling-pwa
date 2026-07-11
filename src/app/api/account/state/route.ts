@@ -39,7 +39,7 @@ export async function GET() {
         id: row.id,
         date: row.local_date,
         questionId: row.question_id,
-        question: DAILY_QUESTIONS.find((item) => item.id === row.question_id)?.prompt ?? "今天发生了什么？",
+        question: DAILY_QUESTIONS.find((item) => item.id === row.question_id)?.prompt ?? "今天发生了什么",
         answer: row.answer,
         response: row.response_text,
         traitDelta: row.trait_delta,

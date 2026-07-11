@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://oddling-pwa.vercel.app"),
   title: {
     default: "Oddling 怪可爱分身",
-    template: "%s · Oddling",
+    template: "%s Oddling",
   },
-  description: "每天回答一个怪问题，看看另一个你又长成了什么奇怪样子。",
+  description: "每天回答一个怪问题 看看另一个你又长成了什么奇怪样子",
   applicationName: "Oddling",
   appleWebApp: {
     capable: true,

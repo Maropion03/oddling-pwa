@@ -36,14 +36,14 @@ export function Landing() {
         >
           <p className="eyebrow">AI ALTER EGO TOY</p>
           <Wordmark />
-          <h1 className="display-title">把另一个你放出来。</h1>
-          <p className="lede">回答四个怪问题，得到一个不完全受你控制的数字分身。以后每天一句话，看它继续长歪。</p>
+          <h1 className="display-title">把另一个你放出来</h1>
+          <p className="lede">回答四个怪问题 得到一个不完全受你控制的数字分身 以后每天一句话 看它继续长歪</p>
           <div className="landing__actions">
             <Link className="btn btn--primary" href={hydrated && state.avatar ? "/home" : "/create"}>
               {hydrated && state.avatar ? `去找 ${state.avatar.name}` : "开始生成"}
               <ArrowUpRight size={19} aria-hidden="true" />
             </Link>
-            <span className="landing__aside"><Sparkles size={16}/> 不用注册 · 不会断签 · 可以改名</span>
+            <span className="landing__aside"><Sparkles size={16}/> 不用注册 不会断签 可以改名</span>
           </div>
         </motion.div>
 
@@ -60,9 +60,9 @@ export function Landing() {
       </section>
 
       <section className="landing__proof" aria-label="产品特点">
-        <div><span>01</span><strong>一句回答</strong><p>不写长日记，只留下今天最像你的那一句。</p></div>
-        <div><span>02</span><strong>一次变异</strong><p>外观、动作和脾气都会留下真正可回看的变化。</p></div>
-        <div><span>03</span><strong>一张贴纸</strong><p>每天掉落一张结果，方便收藏，也适合发给熟人。</p></div>
+        <div><span>01</span><strong>一句回答</strong><p>不写长日记 只留下今天最像你的那一句</p></div>
+        <div><span>02</span><strong>一次变异</strong><p>外观 动作和脾气都会留下真正可回看的变化</p></div>
+        <div><span>03</span><strong>一张贴纸</strong><p>每天掉落一张结果 方便收藏 也适合发给熟人</p></div>
       </section>
     </main>
   );

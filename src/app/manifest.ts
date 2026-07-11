@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Oddling 怪可爱分身",
     short_name: "Oddling",
-    description: "每天回答一个怪问题，看看另一个你又长成了什么奇怪样子。",
+    description: "每天回答一个怪问题 看看另一个你又长成了什么奇怪样子",
     start_url: "/",
     display: "standalone",
     background_color: "#F3EEDC",
