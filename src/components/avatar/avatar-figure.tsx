@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { clsx } from "clsx";
 import type { CSSProperties } from "react";
 import type { AvatarParts } from "@/lib/domain/types";
@@ -153,6 +153,8 @@ export function AvatarFigure({
   animated?: boolean;
   className?: string;
 }) {
+  const reduceMotion = useReducedMotion();
+  const shouldAnimate = animated && !reduceMotion;
   const bodyColor = {
     coral: AVATAR_COLORS.coral,
     blue: AVATAR_COLORS.blue,
@@ -164,7 +166,7 @@ export function AvatarFigure({
     <motion.div
       className={clsx("avatar-figure", `avatar-figure--${size}`, className)}
       style={{ "--avatar-body": bodyColor } as CSSProperties}
-      initial={animated ? { opacity: 0, y: 18, rotate: -2 } : false}
+      initial={shouldAnimate ? { opacity: 0, y: 18, rotate: -2 } : false}
       animate={{ opacity: 1, y: 0, rotate: 0 }}
       transition={{ type: "spring", stiffness: 180, damping: 16 }}
       role="img"
@@ -177,14 +179,14 @@ export function AvatarFigure({
         </g>
         <motion.g
           className="avatar-line"
-          animate={animated ? { y: [0, -4, 0] } : undefined}
+          animate={shouldAnimate ? { y: [0, -4, 0] } : undefined}
           transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
         >
           <path className="avatar-body" fill={bodyColor} d={BODY_PATHS[parts.body] ?? BODY_PATHS.bean}/>
           <g className="avatar-texture">{parts.textures.map((token, index) => <Texture key={token} token={token} index={index}/>)}</g>
-          <Eyes token={parts.eyes} animated={animated} />
-          <Mouth token={parts.mouth} animated={animated} />
-          <HeadPart token={parts.head} animated={animated} />
+          <Eyes token={parts.eyes} animated={shouldAnimate} />
+          <Mouth token={parts.mouth} animated={shouldAnimate} />
+          <HeadPart token={parts.head} animated={shouldAnimate} />
           <Handheld token={parts.handheld} />
         </motion.g>
       </svg>

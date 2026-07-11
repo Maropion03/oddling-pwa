@@ -155,7 +155,6 @@ button {
 }
 
 .display-title {
-  
   margin: 0;
   font-family: Impact, "Arial Black", "PingFang SC", sans-serif;
   font-size: clamp(2.2rem, 5.5vw, 4.2rem);
@@ -532,6 +531,18 @@ button {
 .result-share-card__copy > span { font-size: .74rem; font-weight: 800; }
 .result-share-card__traits { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .result-share-card__traits span { padding: 4px 7px; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--yellow); font-size: .65rem; font-weight: 800; }
+.result-share-card--square { gap: 4px; padding: 16px; }
+.result-share-card--square .result-share-card__brand { font-size: .82rem; }
+.result-share-card--square .result-share-card__eye { font-size: 1rem; }
+.result-share-card--square .result-share-card__kicker { font-size: .56rem; }
+.result-share-card--square .avatar-figure { width: 38%; max-width: 96px; }
+.result-share-card--square .result-share-card__copy { gap: 4px; }
+.result-share-card--square .result-share-card__name { font-size: 1.6rem; }
+.result-share-card--square .result-share-card__copy > strong { font-size: .9rem; }
+.result-share-card--square .result-share-card__line { font-size: .66rem; line-height: 1.3; }
+.result-share-card--square .result-share-card__copy > span { font-size: .58rem; }
+.result-share-card--square .result-share-card__traits { gap: 4px; }
+.result-share-card--square .result-share-card__traits span { padding: 3px 5px; font-size: .54rem; }
 .result-image-maker__actions { display: flex; align-items: center; gap: 10px; }
 
 .privacy-page { min-height: 100svh; background: var(--paper); color: var(--ink); }
@@ -817,7 +828,6 @@ button {
 }
 
 .question-title {
-  
   margin: 0;
   font-family: Impact, "Arial Black", "PingFang SC", sans-serif;
   font-size: clamp(1.8rem, 4.5vw, 3.2rem);

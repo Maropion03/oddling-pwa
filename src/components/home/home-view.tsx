@@ -150,7 +150,7 @@ export function HomeView() {
                         <span className="completion-mark"><Check size={26}/></span>
                         <p className="eyebrow">TODAY IS ARCHIVED</p>
                         <h2>{completed.question}</h2>
-                        <blockquote>"{completed.answer}"</blockquote>
+                        <blockquote>“{completed.answer}”</blockquote>
                         <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{completed.mutation.label}</strong></div>
                         <StickerCard sticker={completed.sticker} compact />
                         <div className="daily-share-actions">

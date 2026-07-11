@@ -2,7 +2,7 @@
 
 import { useRef, useState, type CSSProperties } from "react";
 import { Download, ImageIcon, RectangleVertical, Square } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toPng } from "html-to-image";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { getPersonalityRead } from "@/lib/domain/engine";
@@ -31,12 +31,14 @@ const flipVariants = {
 export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: DailyEntry | null }) {
   const [format, setFormat] = useState<Format>("portrait");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [isFlipping, setIsFlipping] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const personality = getPersonalityRead(avatar.traits);
   const isDaily = Boolean(entry);
 
   async function save() {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isFlipping) return;
     setStatus("saving");
     try {
       const dataUrl = await toPng(cardRef.current, {
@@ -54,28 +56,38 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
     }
   }
 
+  function changeFormat(nextFormat: Format) {
+    if (nextFormat === format || isFlipping) return;
+    setStatus("idle");
+    setIsFlipping(!reduceMotion);
+    setFormat(nextFormat);
+  }
+
   return (
     <section className="result-image-maker" aria-label="保存分享结果图">
       <div className="result-image-maker__top">
         <div><p className="eyebrow">READY TO POST</p><h2>{isDaily ? "把今天的变异带走" : "把第一次见面带走"}</h2></div>
         <div className="result-format-switch" role="group" aria-label="结果图尺寸">
-          <button type="button" aria-pressed={format === "portrait"} onClick={() => setFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
-          <button type="button" aria-pressed={format === "square"} onClick={() => setFormat("square")}><Square size={16}/>1:1</button>
+          <button type="button" aria-pressed={format === "portrait"} disabled={isFlipping} onClick={() => changeFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
+          <button type="button" aria-pressed={format === "square"} disabled={isFlipping} onClick={() => changeFormat("square")}><Square size={16}/>1:1</button>
         </div>
       </div>
 
       <div className="result-share-card__flipper">
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={format}
             ref={cardRef}
             className={`result-share-card result-share-card--${format}`}
             style={{ ...EXPORT_COLOR_TOKENS, backfaceVisibility: "hidden", gridArea: "1 / 1" }}
             variants={flipVariants}
-            initial="enter"
+            initial={isFlipping ? "enter" : false}
             animate="center"
-            exit="exit"
-            transition={{ duration: 0.45, ease: "easeInOut" }}
+            exit={reduceMotion ? undefined : "exit"}
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: "easeInOut" }}
+            onAnimationComplete={() => {
+              if (isFlipping) setIsFlipping(false);
+            }}
           >
             <div className="result-share-card__brand"><span className="result-share-card__eye">•</span>ODDLING<span>↘</span></div>
             <p className="result-share-card__kicker">{isDaily ? `DAY ${String(avatar.mutationCount).padStart(2, "0")}` : "SPECIMEN FOUND"}</p>
@@ -93,7 +105,7 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
       </div>
 
       <div className="result-image-maker__actions">
-        <button type="button" className="btn btn--primary" onClick={() => void save()} disabled={status === "saving"}><Download size={18}/>{status === "saving" ? "正在导出" : status === "saved" ? "已保存" : "保存图片"}</button>
+        <button type="button" className="btn btn--primary" onClick={() => void save()} disabled={status === "saving" || isFlipping}><Download size={18}/>{isFlipping ? "翻页中" : status === "saving" ? "正在导出" : status === "saved" ? "已保存" : "保存图片"}</button>
         {status === "error" && <p className="form-error" role="alert"><ImageIcon size={16}/>图片生成失败，请重试。</p>}
       </div>
     </section>

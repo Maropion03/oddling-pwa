@@ -69,12 +69,23 @@ test("result cards can be saved and public links can be managed", async ({ page 
   await page.getByRole("button", { name: "保存图片" }).click();
   expect((await birthDownload).suggestedFilename()).toMatch(/^oddling-birth-portrait\.png$/);
 
+  await page.getByRole("button", { name: /1:1/ }).evaluate((button: HTMLButtonElement) => button.click());
+  await expect(page.getByRole("button", { name: "翻页中" })).toBeDisabled();
+  const saveButton = page.getByRole("button", { name: "保存图片" });
+  await expect(saveButton).toBeEnabled({ timeout: 1_500 });
+  const squareDownload = page.waitForEvent("download");
+  await saveButton.click();
+  expect((await squareDownload).suggestedFilename()).toMatch(/^oddling-birth-square\.png$/);
+
   await page.getByRole("button", { name: "带它回巢穴" }).click();
   await completeDaily(page);
+  await page.getByRole("button", { name: "去保存 →" }).click();
+  await expect(page.getByRole("button", { name: "保存图片" })).toBeVisible();
   const dailyDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "保存图片" }).click();
   expect((await dailyDownload).suggestedFilename()).toMatch(/^oddling-daily-portrait\.png$/);
 
+  await page.getByRole("button", { name: "← 返回" }).click();
   await page.getByRole("button", { name: "复制链接" }).click();
   await page.goto("/me");
   await expect(page.getByText("公开分享")).toBeVisible();
