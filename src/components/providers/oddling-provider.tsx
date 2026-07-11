@@ -81,11 +81,10 @@ function getVisitorId(): string {
   return created;
 }
 
-async function ensureCloudUser() {
+export async function ensureCloudUser() {
   const supabase = createSupabaseBrowserClient();
   if (!supabase) throw new Error("云端服务尚未配置");
-  const { data, error } = await supabase.auth.getUser();
-  if (error) throw error;
+  const { data } = await supabase.auth.getUser();
   if (data.user) return supabase;
   const anonymous = await supabase.auth.signInAnonymously();
   if (anonymous.error) throw anonymous.error;
