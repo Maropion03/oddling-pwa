@@ -105,10 +105,19 @@ async function cloudRequest<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+function cloudDailyPath(date: string) {
+  const params = new URLSearchParams({
+    date,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+  return `/api/daily?${params.toString()}`;
+}
+
 export function OddlingProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(() => typeof window === "undefined" ? EMPTY_STATE : readState());
   const [cloudStatus, setCloudStatus] = useState<OddlingContextValue["cloudStatus"]>("local");
   const [cloudError, setCloudError] = useState<string | null>(null);
+  const [cloudQuestion, setCloudQuestion] = useState<DailyQuestion | null>(null);
   const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const today = localDate();
   const cloudConfigured = Boolean(
@@ -130,7 +139,11 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
         const response = await fetch("/api/account/state", { cache: "no-store" });
         if (!response.ok) throw new Error("无法恢复云端数据");
         const body = await response.json() as { state: AppState };
-        if (!cancelled && body.state.avatar) setState(body.state);
+        if (!cancelled && body.state.avatar) {
+          setState(body.state);
+          const daily = await cloudRequest<{ question: DailyQuestion | null }>(cloudDailyPath(today));
+          if (!cancelled) setCloudQuestion(daily.question);
+        }
         if (!cancelled) {
           setCloudStatus("synced");
           setCloudError(null);
@@ -140,7 +153,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
       }
     })();
     return () => { cancelled = true; };
-  }, [cloudConfigured, markCloudError]);
+  }, [cloudConfigured, markCloudError, today]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -156,13 +169,14 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
   const todayQuestion = useMemo(() => {
     if (!state.avatar) return null;
     if (todayEntry) return DAILY_QUESTIONS.find((question) => question.id === todayEntry.questionId) ?? null;
+    if (cloudConfigured && cloudQuestion) return cloudQuestion;
     if (activeQuestionId) return DAILY_QUESTIONS.find((question) => question.id === activeQuestionId) ?? null;
     return selectDailyQuestion({
       avatarSeed: state.avatar.seed,
       date: today,
       history: state.questionHistory,
     });
-  }, [activeQuestionId, state.avatar, state.questionHistory, today, todayEntry]);
+  }, [activeQuestionId, cloudConfigured, cloudQuestion, state.avatar, state.questionHistory, today, todayEntry]);
 
   const createAvatar = useCallback(async (input: OnboardingInput) => {
     let avatar = generateAvatar(input);
@@ -170,6 +184,8 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
       try {
         const body = await cloudRequest<{ avatar: Avatar }>("/api/avatar/create", { method: "POST", body: JSON.stringify(input) });
         avatar = body.avatar;
+        const daily = await cloudRequest<{ question: DailyQuestion | null }>(cloudDailyPath(today));
+        setCloudQuestion(daily.question);
         setCloudStatus("synced"); setCloudError(null);
       } catch (error) {
         markCloudError(error); throw error;
@@ -177,7 +193,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     }
     setState({ ...EMPTY_STATE, avatar, theme: state.theme });
     return avatar;
-  }, [cloudConfigured, markCloudError, state.theme]);
+  }, [cloudConfigured, markCloudError, state.theme, today]);
 
   const rebuildAvatar = useCallback(async (input: OnboardingInput) => {
     if (!state.avatar || state.avatar.rebuildUsed) return false;
@@ -188,6 +204,8 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
       try {
         const body = await cloudRequest<{ avatar: Avatar }>("/api/avatar/create", { method: "POST", body: JSON.stringify({ ...input, rebuild: true }) });
         avatar = body.avatar;
+        const daily = await cloudRequest<{ question: DailyQuestion | null }>(cloudDailyPath(today));
+        setCloudQuestion(daily.question);
         setCloudStatus("synced"); setCloudError(null);
       } catch (error) {
         markCloudError(error); throw error;
@@ -195,7 +213,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     }
     setState({ ...EMPTY_STATE, avatar, theme: state.theme });
     return true;
-  }, [cloudConfigured, markCloudError, state.avatar, state.theme]);
+  }, [cloudConfigured, markCloudError, state.avatar, state.theme, today]);
 
   const renameAvatar = useCallback(async (name: string) => {
     const clean = name.trim().slice(0, 12);
@@ -223,6 +241,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
           body: JSON.stringify({ date: today, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, currentQuestionId: todayQuestion.id }),
         });
         replacement = body.question;
+        setCloudQuestion(replacement);
         setCloudStatus("synced"); setCloudError(null);
       } catch (error) {
         markCloudError(error); throw error;
