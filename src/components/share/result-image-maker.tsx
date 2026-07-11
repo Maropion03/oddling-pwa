@@ -23,36 +23,17 @@ const EXPORT_COLOR_TOKENS = {
 } as CSSProperties;
 
 const flipVariants = {
-  enter: (direction: number) => ({
-    rotateY: direction > 0 ? 90 : -90,
-    opacity: 0,
-    scale: 0.92,
-  }),
-  center: {
-    rotateY: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    rotateY: direction > 0 ? -90 : 90,
-    opacity: 0,
-    scale: 0.92,
-  }),
+  enter: { rotateY: 90, opacity: 0, scale: 0.92 },
+  center: { rotateY: 0, opacity: 1, scale: 1 },
+  exit: { rotateY: -90, opacity: 0, scale: 0.92 },
 };
 
 export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: DailyEntry | null }) {
   const [format, setFormat] = useState<Format>("portrait");
-  const [direction, setDirection] = useState(1);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const cardRef = useRef<HTMLDivElement>(null);
   const personality = getPersonalityRead(avatar.traits);
   const isDaily = Boolean(entry);
-
-  function switchFormat(newFormat: Format) {
-    if (newFormat === format) return;
-    setDirection(newFormat === "portrait" ? -1 : 1);
-    setFormat(newFormat);
-  }
 
   async function save() {
     if (!cardRef.current) return;
@@ -78,19 +59,18 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
       <div className="result-image-maker__top">
         <div><p className="eyebrow">READY TO POST</p><h2>{isDaily ? "把今天的变异带走" : "把第一次见面带走"}</h2></div>
         <div className="result-format-switch" role="group" aria-label="结果图尺寸">
-          <button type="button" aria-pressed={format === "portrait"} onClick={() => switchFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
-          <button type="button" aria-pressed={format === "square"} onClick={() => switchFormat("square")}><Square size={16}/>1:1</button>
+          <button type="button" aria-pressed={format === "portrait"} onClick={() => setFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
+          <button type="button" aria-pressed={format === "square"} onClick={() => setFormat("square")}><Square size={16}/>1:1</button>
         </div>
       </div>
 
       <div className="result-share-card__flipper">
-        <AnimatePresence mode="wait" custom={direction}>
+        <AnimatePresence mode="sync">
           <motion.div
             key={format}
             ref={cardRef}
             className={`result-share-card result-share-card--${format}`}
-            style={EXPORT_COLOR_TOKENS}
-            custom={direction}
+            style={{ ...EXPORT_COLOR_TOKENS, backfaceVisibility: "hidden", gridArea: "1 / 1" }}
             variants={flipVariants}
             initial="enter"
             animate="center"

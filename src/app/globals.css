@@ -497,6 +497,7 @@ button {
 .result-format-switch button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 9px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 0.75rem; cursor: pointer; }
 .result-format-switch button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .result-share-card__flipper { display: grid; justify-items: center; perspective: 1000px; }
+.result-share-card__flipper > * { grid-area: 1 / 1; }
 
 .result-share-card {
   position: relative;
