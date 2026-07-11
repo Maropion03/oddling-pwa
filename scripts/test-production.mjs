@@ -35,9 +35,16 @@ try {
   await preview.waitFor({ timeout: 10_000 });
   const href = await preview.getAttribute("href");
   if (!href) throw new Error("Production share URL was not created");
+  const shareUrl = new URL(href, baseURL);
+  const shareId = shareUrl.pathname.split("/").filter(Boolean).at(-1);
+  if (!shareId) throw new Error("Production share token was not found");
+  const ogImage = await page.request.get(`${baseURL}/api/og/${shareId}`);
+  if (!ogImage.ok() || !ogImage.headers()["content-type"]?.includes("image/png")) {
+    throw new Error("Production dynamic OG image was not generated");
+  }
 
   const guestPage = await guest.newPage();
-  await guestPage.goto(new URL(href, baseURL).href);
+  await guestPage.goto(shareUrl.href);
   await guestPage.getByRole("button", { name: "投喂怪东西 来源不明，但大概能吃" }).click();
   await guestPage.getByText("RELATIONSHIP").waitFor({ timeout: 15_000 });
   const firstResponse = await guestPage.getByRole("heading", { level: 2 }).textContent();
@@ -46,7 +53,7 @@ try {
   const restoredResponse = await guestPage.getByRole("heading", { level: 2 }).textContent();
   if (firstResponse !== restoredResponse) throw new Error("Guest interaction was not restored after reload");
 
-  console.log("Production verified: cloud create, daily mutation, share, guest interaction, and reload persistence.");
+  console.log("Production verified: cloud create, daily mutation, share, dynamic OG image, guest interaction, and reload persistence.");
 } finally {
   if (ownerCreated) await page.request.delete(`${baseURL}/api/account`).catch(() => undefined);
   await owner.close();
