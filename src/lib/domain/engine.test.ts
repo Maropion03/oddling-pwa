@@ -97,4 +97,12 @@ describe("Oddling domain engine", () => {
     expect(first.response).toBe(second.response);
     expect(first.sticker.subtitle).toBe(second.sticker.subtitle);
   });
+
+  it("uses a cleaned custom label in the visitor response and sticker", () => {
+    const avatar = generateAvatar(onboarding);
+    const share = createShare(avatar, null, new Date("2026-07-10T08:00:00Z"));
+    const interaction = createGuestInteraction({ share, visitorId: "visitor", action: "label", labelText: "很会等！" });
+    expect(interaction.sticker.subtitle).toBe("很会等");
+    expect(interaction.response).toContain("很会等");
+  });
 });

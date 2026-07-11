@@ -28,6 +28,7 @@ export const dailyResponseSchema = dailyDateSchema.extend({
 export const guestInteractionSchema = z.object({
   visitorId: z.uuid(),
   action: z.enum(["poke", "feed", "label"]),
+  labelText: z.string().trim().min(1).max(12).optional(),
 });
 
 export const shareExpirySchema = z.object({

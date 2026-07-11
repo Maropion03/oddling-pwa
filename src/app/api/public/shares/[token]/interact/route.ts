@@ -41,7 +41,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       expiresAt: row.expires_at,
       snapshot: snapshotFromRow(row.public_snapshot),
     };
-    const interaction = createGuestInteraction({ share, visitorId: input.visitorId, action: input.action });
+    const interaction = createGuestInteraction({ share, visitorId: input.visitorId, action: input.action, labelText: input.labelText });
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const dailySalt = new Date().toISOString().slice(0, 10);
     const visitorRateHash = createHmac("sha256", secret).update(`${dailySalt}:${ip}`).digest("hex");

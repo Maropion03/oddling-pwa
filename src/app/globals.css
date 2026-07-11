@@ -1336,11 +1336,37 @@ button {
 }
 
 .public-stage > .eyebrow { position: absolute; top: 28px; left: var(--page-pad); color: #202124; }
+.public-stage > .avatar-figure { position: relative; z-index: 2; }
 .public-name { position: absolute; right: 7%; bottom: 8%; color: #202124; text-align: right; }
 .public-name span { font-size: 0.7rem; font-weight: 800; }
 .public-name h1 { margin: 3px 0; font-family: Impact, "Arial Black", "PingFang SC", sans-serif; font-size: clamp(1.8rem, 4.5vw, 3.2rem); letter-spacing: -0.04em; line-height: 0.9; }
 .public-name p { margin: 8px 0 0; font-size: 0.78rem; font-weight: 800; }
 .public-sticker { position: absolute; top: 10%; right: 5%; width: min(210px, 28vw); transform: rotate(7deg); }
+
+.interaction-overlay { position: absolute; z-index: 5; inset: 0; overflow: hidden; pointer-events: none; }
+.interaction-overlay__hand { position: absolute; top: 50%; left: 50%; width: 104px; height: 128px; margin: -64px 0 0 -52px; }
+.interaction-hand { position: relative; width: 100%; height: 100%; transform: rotate(-18deg); }
+.interaction-hand__palm { position: absolute; right: 14px; bottom: 8px; width: 66px; height: 74px; border: 4px solid var(--ink); border-radius: 42% 52% 38% 46%; background: var(--white); box-shadow: 5px 6px 0 rgb(32 33 36 / .18); }
+.interaction-hand__finger { position: absolute; top: 5px; width: 20px; height: 72px; border: 4px solid var(--ink); border-radius: 999px; background: var(--white); transform-origin: bottom; }
+.interaction-hand__finger--one { right: 13px; transform: rotate(12deg); }
+.interaction-hand__finger--two { right: 39px; height: 86px; transform: rotate(2deg); }
+.interaction-hand__finger--three { right: 65px; height: 68px; transform: rotate(-12deg); }
+.interaction-hand--poke { transform: rotate(72deg); }
+.interaction-hand--poke .interaction-hand__finger--two { width: 24px; height: 98px; background: var(--yellow); }
+.interaction-hand--feed { transform: rotate(30deg); }
+.interaction-hand--label { transform: rotate(-5deg); }
+.interaction-snack { position: absolute; top: 50%; left: 50%; display: grid; width: 62px; height: 62px; margin: -31px 0 0 -31px; place-items: center; border: 3px solid var(--ink); border-radius: 50%; background: var(--yellow); color: var(--ink); box-shadow: 4px 5px 0 var(--ink); }
+.interaction-impact { position: absolute; top: 48%; left: 49%; color: var(--ink); font-family: Impact, "Arial Black", sans-serif; font-size: clamp(3rem, 7vw, 5rem); line-height: .8; }
+.interaction-label-sticker { position: absolute; top: 50%; left: 50%; display: grid; width: min(180px, 33vw); min-height: 90px; margin: -45px 0 0 -90px; align-content: center; gap: 5px; padding: 13px; border: 3px solid var(--ink); border-radius: 15px 20px 16px 22px; background: var(--green); color: var(--ink); box-shadow: 6px 7px 0 var(--blue); text-align: center; }
+.interaction-label-sticker span { font-family: ui-monospace, monospace; font-size: .6rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.interaction-label-sticker strong { font-size: 1.1rem; line-height: 1.1; overflow-wrap: anywhere; }
+
+.label-dialog { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 22px; }
+.label-dialog__scrim { position: absolute; inset: 0; width: 100%; height: 100%; background: rgb(32 33 36 / .58); cursor: default; }
+.label-dialog__card { position: relative; z-index: 1; display: grid; width: min(100%, 440px); gap: 15px; padding: clamp(24px, 5vw, 36px); border: 3px solid var(--ink); border-radius: 24px 18px 26px 20px; background: var(--paper); box-shadow: 9px 10px 0 var(--blue); }
+.label-dialog__card h2 { margin: 0; font-family: Impact, "Arial Black", "PingFang SC", sans-serif; font-size: clamp(1.8rem, 7vw, 2.7rem); line-height: .95; letter-spacing: -.04em; }
+.label-dialog__card label { font-size: .86rem; font-weight: 850; }
+.label-dialog__actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 4px; }
 
 .guest-action {
   display: grid;
@@ -1382,6 +1408,7 @@ button {
   .settings-item > :last-child:not(div) { grid-column: 2; justify-self: start; }
   .settings-item > .segmented, .settings-item > .confirm-actions { grid-column: 2; justify-self: start; }
   .public-sticker { display: none; }
+  .interaction-label-sticker { width: 150px; }
 }
 
 @media (max-width: 540px) {

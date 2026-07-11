@@ -1,4 +1,5 @@
 import { DAILY_QUESTIONS } from "./questions";
+import { plainText } from "../text";
 import type {
   Avatar,
   AvatarParts,
@@ -347,6 +348,7 @@ export function createGuestInteraction(options: {
   share: ShareRecord;
   visitorId: string;
   action: GuestAction;
+  labelText?: string;
   now?: Date;
 }): GuestInteraction {
   const now = options.now ?? new Date();
@@ -361,16 +363,23 @@ export function createGuestInteraction(options: {
     feed: "收到神秘投喂",
     label: "获得临时定义",
   };
+  const customLabel = plainText(options.labelText ?? "").slice(0, 12);
+  const labelText = options.action === "label" && customLabel
+    ? customLabel
+    : labels[options.action];
+  const response = options.action === "label" && customLabel
+    ? `它读完${labelText} 暂时接受这个身份`
+    : pick(actionCopy[options.action], seed);
   return {
     shareId: options.share.id,
     visitorId: options.visitorId,
     action: options.action,
-    response: pick(actionCopy[options.action], seed),
+    response,
     sticker: {
       id: crypto.randomUUID(),
       kind: "relationship",
       title: "关系发生了一下",
-      subtitle: labels[options.action],
+      subtitle: labelText,
       date: localDate(now),
       tone: pick(["coral", "blue", "yellow"] as const, seed),
     },

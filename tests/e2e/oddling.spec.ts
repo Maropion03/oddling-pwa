@@ -62,6 +62,21 @@ test("public share is private, guest interaction is idempotent, and conversion C
   await expect(page.getByRole("link", { name: "我也放一个出来" })).toHaveAttribute("href", "/create");
 });
 
+test("public label interaction animates and keeps the visitor label", async ({ page }) => {
+  await createOddling(page);
+  await completeDaily(page);
+  await page.getByRole("button", { name: "复制链接" }).click();
+  const href = await page.getByRole("link", { name: "预览好友看到的页面" }).getAttribute("href");
+  expect(href).toBeTruthy();
+  await page.goto(href!);
+  await page.getByRole("button", { name: "贴个标签 给它一个临时定义" }).click();
+  await page.getByRole("textbox", { name: "写在贴纸上" }).fill("很会等");
+  await page.getByRole("button", { name: "贴上去" }).click();
+  await expect(page.locator(".interaction-label-sticker")).toContainText("很会等");
+  await expect(page.getByText("RELATIONSHIP")).toBeVisible();
+  await expect(page.locator(".guest-result")).toContainText("很会等");
+});
+
 test("result cards can be saved and public links can be managed", async ({ page }) => {
   await createOddling(page, false);
   await expect(page.getByLabel("最突出的性格属性")).toBeVisible();

@@ -53,7 +53,7 @@ interface OddlingContextValue {
   revokeShare: (shareId: string) => Promise<void>;
   setShareExpiry: (shareId: string, expiresInDays: 7 | 30 | 90 | null) => Promise<void>;
   findShare: (shareId: string) => ShareRecord | null;
-  interactWithShare: (shareId: string, action: GuestAction) => Promise<GuestInteraction | null>;
+  interactWithShare: (shareId: string, action: GuestAction, labelText?: string) => Promise<GuestInteraction | null>;
   setTheme: (theme: AppState["theme"]) => void;
   exportState: () => string;
   deleteAllData: () => Promise<void>;
@@ -326,7 +326,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     state.shares.find((share) => share.id === shareId) ?? null,
   [state.shares]);
 
-  const interactWithShare = useCallback(async (shareId: string, action: GuestAction) => {
+  const interactWithShare = useCallback(async (shareId: string, action: GuestAction, labelText?: string) => {
     const share = state.shares.find((item) => item.id === shareId);
     if (!share) return null;
     const visitorId = getVisitorId();
@@ -334,7 +334,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
       (interaction) => interaction.shareId === shareId && interaction.visitorId === visitorId,
     );
     if (existing) return existing;
-    const interaction = createGuestInteraction({ share, visitorId, action });
+    const interaction = createGuestInteraction({ share, visitorId, action, labelText });
     setState((current) => ({
       ...current,
       guestInteractions: [...current.guestInteractions, interaction],
