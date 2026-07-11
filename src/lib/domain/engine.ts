@@ -10,6 +10,7 @@ import type {
   MutationSlot,
   OnboardingInput,
   PublicAvatarSnapshot,
+  PersonalityRead,
   ShareRecord,
   Sticker,
   TraitKey,
@@ -24,6 +25,23 @@ const HEAD = ["sprout", "antenna", "paper-crown", "tiny-cloud", "ribbon", "satel
 const BACK = ["fin", "wings", "shell", "flag", "tail", "shadow"];
 const TEXTURES = ["freckles", "stripes", "dots", "patch", "stars", "scribble"];
 const HANDHELD = ["spoon", "key", "flower", "lamp", "tiny-flag", "snack"];
+const AVATAR_COLORS = ["coral", "blue", "yellow", "green", "violet"] as const;
+
+const TRAIT_LABELS: Record<TraitKey, string> = {
+  energy: "行动电量",
+  softness: "柔软雷达",
+  order: "秩序执念",
+  social: "靠近欲望",
+  oddness: "怪得有理",
+};
+
+const PERSONALITY_COPY: Record<TraitKey, { title: string; verb: string }> = {
+  energy: { title: "先动一下派", verb: "把犹豫点亮" },
+  softness: { title: "慢慢接住派", verb: "把声音放轻" },
+  order: { title: "口袋收纳派", verb: "给混乱编号" },
+  social: { title: "靠近一点派", verb: "把气氛接住" },
+  oddness: { title: "认真长歪派", verb: "给日常加一条岔路" },
+};
 
 export const MUTATION_TOKENS = {
   head: HEAD,
@@ -107,6 +125,7 @@ export function generateAvatar(input: OnboardingInput, now = new Date()): Avatar
 
   const parts: AvatarParts = {
     body: pick(BODY, seed),
+    color: pick(AVATAR_COLORS, hashString(`${seedText}:${traits.oddness}:${traits.energy}`)),
     eyes: pick(EYES, seed, 1),
     mouth: pick(MOUTHS, seed, 2),
     head: null,
@@ -117,13 +136,33 @@ export function generateAvatar(input: OnboardingInput, now = new Date()): Avatar
 
   return {
     id: crypto.randomUUID(),
-    name: pick(["泡芙", "团子", "不明", "歪歪", "某某", "点点"], seed, 4),
+    name: `${pick(["小声", "迟到", "反光", "备用", "半熟", "低电量", "不合时宜", "偷偷", "逆风", "慢热"], seed, 4)}${pick(["泡芙", "团子", "云朵", "麻薯", "灯泡", "水坑", "纸船", "月亮", "小勺", "影子", "土豆", "杂音"], seed, 5)}`,
     seed: seed.toString(36),
     traits,
     parts,
     mutationCount: 0,
     rebuildUsed: false,
     createdAt: now.toISOString(),
+  };
+}
+
+export function getTraitHighlights(traits: Traits, count = 2) {
+  return (Object.entries(traits) as Array<[TraitKey, number]>)
+    .sort(([leftKey, leftValue], [rightKey, rightValue]) => rightValue - leftValue || TRAIT_KEYS.indexOf(leftKey) - TRAIT_KEYS.indexOf(rightKey))
+    .slice(0, count)
+    .map(([key, value]) => ({ key, value, label: TRAIT_LABELS[key] }));
+}
+
+export function getPersonalityRead(traits: Traits): PersonalityRead {
+  const highlights = getTraitHighlights(traits);
+  const primary = highlights[0];
+  const secondary = highlights[1];
+  const primaryCopy = PERSONALITY_COPY[primary.key];
+  const secondaryCopy = PERSONALITY_COPY[secondary.key];
+  return {
+    title: primaryCopy.title,
+    description: `它更常${primaryCopy.verb}，也会用${secondaryCopy.verb}的方式处理今天。`,
+    highlights,
   };
 }
 
@@ -299,6 +338,7 @@ export function createShare(avatar: Avatar, sticker: Sticker | null, now = new D
   return {
     id: crypto.randomUUID().replaceAll("-", "").slice(0, 22),
     createdAt: now.toISOString(),
+    expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     snapshot: createPublicSnapshot(avatar, sticker),
   };
 }

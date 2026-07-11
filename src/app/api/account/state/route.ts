@@ -50,6 +50,7 @@ export async function GET() {
     const shares: ShareRecord[] = (shareRows.data ?? []).map((row) => ({
       id: row.public_token,
       createdAt: row.created_at,
+      expiresAt: row.expires_at,
       snapshot: snapshotFromRow(row.public_snapshot),
     }));
     const rerolls = Object.fromEntries((promptRows.data ?? []).filter((row) => row.reroll_used).map((row) => [row.local_date, row.question_id]));

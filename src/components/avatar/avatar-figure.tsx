@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { clsx } from "clsx";
+import type { CSSProperties } from "react";
 import type { AvatarParts } from "@/lib/domain/types";
 
 const BODY_PATHS: Record<string, string> = {
@@ -80,9 +81,17 @@ export function AvatarFigure({
   animated?: boolean;
   className?: string;
 }) {
+  const bodyColor = {
+    coral: "var(--coral)",
+    blue: "var(--blue)",
+    yellow: "var(--yellow)",
+    green: "var(--green)",
+    violet: "#A984E8",
+  }[parts.color ?? "coral"];
   return (
     <motion.div
       className={clsx("avatar-figure", `avatar-figure--${size}`, className)}
+      style={{ "--avatar-body": bodyColor } as CSSProperties}
       initial={animated ? { opacity: 0, y: 18, rotate: -2 } : false}
       animate={{ opacity: 1, y: 0, rotate: 0 }}
       transition={{ type: "spring", stiffness: 180, damping: 16 }}

@@ -33,9 +33,9 @@ export function PublicShareView({ shareId }: { shareId: string }) {
       const visitorQuery = visitorId ? `?visitorId=${encodeURIComponent(visitorId)}` : "";
       const response = await fetch(`/api/public/shares/${encodeURIComponent(shareId)}${visitorQuery}`);
       if (response.ok) {
-        const body = await response.json() as { token: string; snapshot: ShareRecord["snapshot"]; createdAt: string; interaction?: GuestInteraction | null };
+        const body = await response.json() as { token: string; snapshot: ShareRecord["snapshot"]; createdAt: string; expiresAt?: string | null; interaction?: GuestInteraction | null };
         if (!cancelled) {
-          setRemoteShare({ id: body.token, snapshot: body.snapshot, createdAt: body.createdAt });
+          setRemoteShare({ id: body.token, snapshot: body.snapshot, createdAt: body.createdAt, expiresAt: body.expiresAt ?? null });
           setInteraction(body.interaction ?? null);
         }
       }

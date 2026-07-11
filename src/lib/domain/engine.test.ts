@@ -6,6 +6,8 @@ import {
   createGuestInteraction,
   createPublicSnapshot,
   createShare,
+  getPersonalityRead,
+  getTraitHighlights,
   generateAvatar,
   selectDailyQuestion,
 } from "./engine";
@@ -31,7 +33,16 @@ describe("Oddling domain engine", () => {
     const second = generateAvatar(onboarding, new Date("2026-07-10T08:00:00Z"));
     expect(first.seed).toBe(second.seed);
     expect(first.parts).toEqual(second.parts);
+    expect(first.parts.color).toBeDefined();
     expect(Object.values(first.traits).every((value) => value >= 25 && value <= 75)).toBe(true);
+  });
+
+  it("derives an explainable personality read from the two strongest traits", () => {
+    const energetic = getPersonalityRead({ energy: 74, softness: 38, order: 45, social: 41, oddness: 58 });
+    const orderly = getPersonalityRead({ energy: 38, softness: 45, order: 74, social: 41, oddness: 58 });
+    expect(energetic.title).not.toBe(orderly.title);
+    expect(energetic.highlights).toEqual(getTraitHighlights({ energy: 74, softness: 38, order: 45, social: 41, oddness: 58 }));
+    expect(energetic.description).toContain("把犹豫点亮");
   });
 
   it("avoids questions seen in the last 30 days and avoids a third same category", () => {

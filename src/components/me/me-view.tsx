@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, ExternalLink, HardDrive, Mail, MonitorSmartphone, RotateCcw, Trash2 } from "lucide-react";
+import { Download, ExternalLink, HardDrive, Link2, Mail, MonitorSmartphone, RotateCcw, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/navigation/app-shell";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
@@ -10,7 +11,7 @@ import type { AppState } from "@/lib/domain/types";
 
 export function MeView() {
   const router = useRouter();
-  const { state, hydrated, cloudConfigured, cloudStatus, cloudError, renameAvatar, setTheme, exportState, deleteAllData, linkEmail } = useOddling();
+  const { state, hydrated, cloudConfigured, cloudStatus, cloudError, renameAvatar, setTheme, exportState, deleteAllData, linkEmail, revokeShare, setShareExpiry } = useOddling();
   const avatar = state.avatar;
   const [draftName, setDraftName] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -70,6 +71,11 @@ export function MeView() {
 
   const createdWithin24Hours = now - new Date(avatar.createdAt).getTime() <= 24 * 60 * 60 * 1000;
   const canRebuild = createdWithin24Hours && !avatar.rebuildUsed;
+  const shareExpiryOption = (expiresAt: string | null) => {
+    if (!expiresAt) return "never";
+    const days = Math.ceil((new Date(expiresAt).getTime() - now) / (24 * 60 * 60 * 1000));
+    return days <= 10 ? "7" : days <= 60 ? "30" : "90";
+  };
 
   return (
     <AppShell>
@@ -97,6 +103,7 @@ export function MeView() {
             <div className="settings-item settings-item--email"><Mail/><div><strong>{cloudConfigured ? "绑定恢复邮箱" : "云端尚未连接"}</strong><span>{emailStatus === "sent" ? "验证邮件已发送，请在同一浏览器完成确认" : cloudConfigured ? "通过邮件链接升级匿名账户，原数据不会丢失" : "当前数据只保存在这台设备的浏览器中"}</span></div>{cloudConfigured ? <div className="email-bind"><input className="input" type="email" aria-label="恢复邮箱" placeholder="you@example.com" value={email} onChange={(event) => setEmail(event.target.value)}/><button className="btn" disabled={!email.trim() || emailStatus === "sending"} onClick={() => void sendLinkEmail()}>{emailStatus === "sending" ? "发送中" : "发送验证"}</button></div> : <button className="btn" disabled>待部署配置</button>}</div>
             {cloudError && <p className="form-error" role="alert">{cloudError}</p>}
             <div className="settings-item"><HardDrive/><div><strong>导出全部数据</strong><span>下载角色、回答、变异、贴纸与分享记录的 JSON</span></div><button className="btn" onClick={() => void downloadExport()}><Download size={17}/>导出</button></div>
+            <div className="settings-item"><ExternalLink/><div><strong>隐私与反馈</strong><span>查看保存内容、公开范围、模型调用及数据处理方式。</span></div><Link className="btn" href="/privacy">查看说明</Link></div>
           </div>
         </section>
 
@@ -108,8 +115,24 @@ export function MeView() {
           </div>
         </section>
 
+        <section className="settings-section">
+          <div className="settings-section__title"><span>03</span><div><h2>公开分享</h2><p>默认公开 30 天，可随时撤销或调整。</p></div></div>
+          <div className="settings-list">
+            {state.shares.length === 0 ? <div className="settings-item"><Link2/><div><strong>还没有公开链接</strong><span>完成一次每日喂养后，可以把分身发给熟人。</span></div></div> : state.shares.map((share) => (
+              <div className="settings-item settings-item--share" key={share.id}>
+                <Link2/>
+                <div><strong>{share.snapshot.name} 的公开链接</strong><span>{share.expiresAt ? `有效至 ${new Date(share.expiresAt).toLocaleDateString("zh-CN")}` : "长期公开"}</span></div>
+                <select aria-label={`${share.snapshot.name} 的分享有效期`} value={shareExpiryOption(share.expiresAt)} onChange={(event) => void setShareExpiry(share.id, event.target.value === "never" ? null : Number(event.target.value) as 7 | 30 | 90)}>
+                  <option value="7">7 天</option><option value="30">30 天</option><option value="90">90 天</option><option value="never">长期</option>
+                </select>
+                <button className="btn btn--danger" onClick={() => void revokeShare(share.id)}>撤销</button>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="settings-section danger-zone">
-          <div className="settings-section__title"><span>03</span><div><h2>重新开始</h2><p>这些操作会改变或删除已有记录。</p></div></div>
+          <div className="settings-section__title"><span>04</span><div><h2>重新开始</h2><p>这些操作会改变或删除已有记录。</p></div></div>
           <div className="settings-list">
             <div className="settings-item"><RotateCcw/><div><strong>清空并重建一次</strong><span>{canRebuild ? "创建后 24 小时内可用，旧数据会全部删除" : "重建机会不可用或已使用"}</span></div><button className="btn" disabled={!canRebuild} onClick={rebuild}>重新回答</button></div>
             <div className="settings-item"><Trash2/><div><strong>删除全部数据</strong><span>本机数据立即删除；云端模式也会删除认证账户</span></div>{confirmDelete ? <div className="confirm-actions"><button className="btn btn--danger" onClick={() => void remove()}>确定删除</button><button className="btn btn--ghost" onClick={() => setConfirmDelete(false)}>取消</button></div> : <button className="btn btn--danger" onClick={() => setConfirmDelete(true)}>删除</button>}</div>

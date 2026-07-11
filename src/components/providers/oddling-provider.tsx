@@ -45,11 +45,13 @@ interface OddlingContextValue {
   todayEntry: DailyEntry | null;
   todayQuestion: DailyQuestion | null;
   createAvatar: (input: OnboardingInput) => Promise<Avatar>;
-  rebuildAvatar: (input: OnboardingInput) => Promise<boolean>;
+  rebuildAvatar: (input: OnboardingInput) => Promise<Avatar | null>;
   renameAvatar: (name: string) => Promise<void>;
   rerollQuestion: () => Promise<boolean>;
   submitDailyAnswer: (answer: string) => Promise<DailyEntry>;
   makeShare: () => Promise<ShareRecord>;
+  revokeShare: (shareId: string) => Promise<void>;
+  setShareExpiry: (shareId: string, expiresInDays: 7 | 30 | 90 | null) => Promise<void>;
   findShare: (shareId: string) => ShareRecord | null;
   interactWithShare: (shareId: string, action: GuestAction) => Promise<GuestInteraction | null>;
   setTheme: (theme: AppState["theme"]) => void;
@@ -196,9 +198,9 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
   }, [cloudConfigured, markCloudError, state.theme, today]);
 
   const rebuildAvatar = useCallback(async (input: OnboardingInput) => {
-    if (!state.avatar || state.avatar.rebuildUsed) return false;
+    if (!state.avatar || state.avatar.rebuildUsed) return null;
     const age = Date.now() - new Date(state.avatar.createdAt).getTime();
-    if (age > 24 * 60 * 60 * 1000) return false;
+    if (age > 24 * 60 * 60 * 1000) return null;
     let avatar = { ...generateAvatar(input), rebuildUsed: true };
     if (cloudConfigured) {
       try {
@@ -212,7 +214,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
       }
     }
     setState({ ...EMPTY_STATE, avatar, theme: state.theme });
-    return true;
+    return avatar;
   }, [cloudConfigured, markCloudError, state.avatar, state.theme, today]);
 
   const renameAvatar = useCallback(async (name: string) => {
@@ -284,8 +286,8 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     let share = createShare(state.avatar, state.stickers.at(-1) ?? null);
     if (cloudConfigured) {
       try {
-        const body = await cloudRequest<{ token: string; snapshot: ShareRecord["snapshot"] }>("/api/shares", { method: "POST", body: "{}" });
-        share = { id: body.token, snapshot: body.snapshot, createdAt: new Date().toISOString() };
+        const body = await cloudRequest<{ token: string; snapshot: ShareRecord["snapshot"]; expiresAt: string | null }>("/api/shares", { method: "POST", body: "{}" });
+        share = { id: body.token, snapshot: body.snapshot, expiresAt: body.expiresAt, createdAt: new Date().toISOString() };
         setCloudStatus("synced"); setCloudError(null);
       } catch (error) {
         markCloudError(error); throw error;
@@ -294,6 +296,31 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     setState((current) => ({ ...current, shares: [...current.shares, share] }));
     return share;
   }, [cloudConfigured, markCloudError, state.avatar, state.stickers]);
+
+  const revokeShare = useCallback(async (shareId: string) => {
+    if (cloudConfigured) {
+      try {
+        await cloudRequest(`/api/shares/${encodeURIComponent(shareId)}`, { method: "DELETE" });
+      } catch (error) {
+        markCloudError(error); throw error;
+      }
+    }
+    setState((current) => ({ ...current, shares: current.shares.filter((share) => share.id !== shareId) }));
+  }, [cloudConfigured, markCloudError]);
+
+  const setShareExpiry = useCallback(async (shareId: string, expiresInDays: 7 | 30 | 90 | null) => {
+    const expiresAt = expiresInDays === null ? null : new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString();
+    if (cloudConfigured) {
+      try {
+        const body = await cloudRequest<{ expiresAt: string | null }>(`/api/shares/${encodeURIComponent(shareId)}`, { method: "PATCH", body: JSON.stringify({ expiresInDays }) });
+        setState((current) => ({ ...current, shares: current.shares.map((share) => share.id === shareId ? { ...share, expiresAt: body.expiresAt } : share) }));
+        return;
+      } catch (error) {
+        markCloudError(error); throw error;
+      }
+    }
+    setState((current) => ({ ...current, shares: current.shares.map((share) => share.id === shareId ? { ...share, expiresAt } : share) }));
+  }, [cloudConfigured, markCloudError]);
 
   const findShare = useCallback((shareId: string) =>
     state.shares.find((share) => share.id === shareId) ?? null,
@@ -367,6 +394,8 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     rerollQuestion,
     submitDailyAnswer,
     makeShare,
+    revokeShare,
+    setShareExpiry,
     findShare,
     interactWithShare,
     setTheme,
@@ -375,7 +404,7 @@ export function OddlingProvider({ children }: { children: ReactNode }) {
     linkEmail,
   }), [
     state, hydrated, cloudConfigured, cloudStatus, cloudError, today, todayEntry, todayQuestion, createAvatar, rebuildAvatar,
-    renameAvatar, rerollQuestion, submitDailyAnswer, makeShare, findShare, interactWithShare,
+    renameAvatar, rerollQuestion, submitDailyAnswer, makeShare, revokeShare, setShareExpiry, findShare, interactWithShare,
     setTheme, exportState, deleteAllData, linkEmail,
   ]);
 

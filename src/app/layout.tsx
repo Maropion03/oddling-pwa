@@ -4,6 +4,7 @@ import { ServiceWorkerRegistration } from "@/components/providers/service-worker
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://oddling-pwa.vercel.app"),
   title: {
     default: "Oddling 怪可爱分身",
     template: "%s · Oddling",

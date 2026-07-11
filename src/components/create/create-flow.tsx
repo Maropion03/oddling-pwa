@@ -6,10 +6,11 @@ import { ArrowLeft, ArrowRight, Check, Dices } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { Wordmark } from "@/components/brand/wordmark";
+import { ResultImageMaker } from "@/components/share/result-image-maker";
 import { useOddling } from "@/components/providers/oddling-provider";
-import { generateAvatar } from "@/lib/domain/engine";
+import { getPersonalityRead } from "@/lib/domain/engine";
 import { ONBOARDING_QUESTIONS } from "@/lib/domain/questions";
-import type { OnboardingAnswer, OnboardingInput } from "@/lib/domain/types";
+import type { Avatar, OnboardingAnswer, OnboardingInput } from "@/lib/domain/types";
 
 const TOTAL_STEPS = 4;
 
@@ -22,7 +23,7 @@ export function CreateFlow() {
   const [phase, setPhase] = useState<"questions" | "generating" | "reveal">("questions");
   const [generationError, setGenerationError] = useState<string | null>(null);
   const input = useMemo<OnboardingInput>(() => ({ choices: answers, freeText }), [answers, freeText]);
-  const preview = useMemo(() => phase === "reveal" ? generateAvatar(input) : null, [input, phase]);
+  const [revealedAvatar, setRevealedAvatar] = useState<Avatar | null>(null);
   const [name, setName] = useState("");
 
   const current = ONBOARDING_QUESTIONS[step];
@@ -52,10 +53,11 @@ export function CreateFlow() {
             const rebuilt = await rebuildAvatar(input);
             window.sessionStorage.removeItem("oddling:rebuild");
             if (!rebuilt) throw new Error("重建机会已经不可用");
-            avatar = generateAvatar(input);
+            avatar = rebuilt;
           } else {
             avatar = await createAvatar(input);
           }
+          setRevealedAvatar(avatar);
           setName(avatar.name);
           setGenerationError(null);
           setPhase("reveal");
@@ -85,24 +87,30 @@ export function CreateFlow() {
     );
   }
 
-  if (phase === "reveal" && preview) {
+  if (phase === "reveal" && revealedAvatar) {
+    const personality = getPersonalityRead(revealedAvatar.traits);
     return (
       <main className="reveal-screen">
         <section className="reveal-stage">
           <p className="eyebrow">SPECIMEN FOUND</p>
-          <AvatarFigure parts={preview.parts} name={name || preview.name} />
+          <AvatarFigure parts={revealedAvatar.parts} name={name || revealedAvatar.name} />
           <span className="reveal-stamp">初次出现<br/>{new Date().toLocaleDateString("zh-CN")}</span>
         </section>
         <section className="reveal-copy">
           <Wordmark compact />
           <h1 className="page-title">它有一点像你，<br/>但不打算承认。</h1>
-          <p className="lede">观察型怪东西。会认真收藏杂音，并在必要时突然长出自己的意见。</p>
+          <p className="personality-title">{personality.title}</p>
+          <p className="lede">{personality.description}</p>
+          <div className="trait-highlights" aria-label="最突出的性格属性">
+            {personality.highlights.map((trait) => <span key={trait.key}><strong>{trait.label}</strong><b>{trait.value}</b></span>)}
+          </div>
           <div className="field">
             <label htmlFor="avatar-name">给它改个名字</label>
             <input id="avatar-name" className="input" maxLength={12} value={name} onChange={(event) => setName(event.target.value)} />
             <span className="field-meta"><span>外观不能捏，名字可以改</span><span>{name.length}/12</span></span>
           </div>
           <button className="btn btn--primary" onClick={enterNest}>带它回巢穴 <ArrowRight size={19}/></button>
+          <ResultImageMaker avatar={revealedAvatar}/>
         </section>
       </main>
     );

@@ -29,7 +29,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ toke
         createdAt: existing.created_at,
       };
     }
-    return NextResponse.json({ token: data.public_token, snapshot: data.public_snapshot, createdAt: data.created_at, interaction });
+    return NextResponse.json({ token: data.public_token, snapshot: data.public_snapshot, createdAt: data.created_at, expiresAt: data.expires_at, interaction });
   } catch (error) {
     return apiError(error);
   }

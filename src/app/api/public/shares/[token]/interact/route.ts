@@ -38,12 +38,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const share: ShareRecord = {
       id: token,
       createdAt: row.created_at,
+      expiresAt: row.expires_at,
       snapshot: snapshotFromRow(row.public_snapshot),
     };
     const interaction = createGuestInteraction({ share, visitorId: input.visitorId, action: input.action });
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const dailySalt = new Date().toISOString().slice(0, 10);
     const visitorRateHash = createHmac("sha256", secret).update(`${dailySalt}:${ip}`).digest("hex");
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: rateError } = await admin
+      .from("guest_interactions")
+      .select("id", { count: "exact", head: true })
+      .eq("share_id", row.id)
+      .eq("visitor_rate_hash", visitorRateHash)
+      .gte("created_at", oneHourAgo);
+    assertQuery(rateError, "检查互动频率失败");
+    if ((count ?? 0) >= 8) throw new ApiError(429, "互动太频繁了，请稍后再试");
     const { error: insertError } = await admin.from("guest_interactions").insert({
       share_id: row.id,
       visitor_id: input.visitorId,

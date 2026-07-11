@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-async function createOddling(page: import("@playwright/test").Page) {
+async function createOddling(page: import("@playwright/test").Page, enterNest = true) {
   await page.goto("/");
   await page.getByRole("link", { name: "开始生成" }).click();
   await page.getByRole("button", { name: "雨里最亮的水坑 干脆加入它 C" }).click();
@@ -14,9 +14,11 @@ async function createOddling(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "下一题" }).click();
   await page.getByRole("textbox", { name: "你的回答" }).fill("把今天没说完的勇气折成一只纸船");
   await page.getByRole("button", { name: "开始生成" }).click();
-  await expect(page.getByText("SPECIMEN FOUND")).toBeVisible({ timeout: 6_000 });
-  await page.getByRole("button", { name: "带它回巢穴" }).click();
-  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.locator(".reveal-stage").getByText("SPECIMEN FOUND", { exact: true })).toBeVisible({ timeout: 6_000 });
+  if (enterNest) {
+    await page.getByRole("button", { name: "带它回巢穴" }).click();
+    await expect(page).toHaveURL(/\/home$/);
+  }
 }
 
 async function completeDaily(page: import("@playwright/test").Page) {
@@ -57,6 +59,27 @@ test("public share is private, guest interaction is idempotent, and conversion C
   await page.getByRole("button", { name: "戳一下 看看它会不会装没看见" }).click();
   await expect(page.getByRole("heading", { level: 2 })).toHaveText(firstResponse ?? "");
   await expect(page.getByRole("link", { name: "我也放一个出来" })).toHaveAttribute("href", "/create");
+});
+
+test("result cards can be saved and public links can be managed", async ({ page }) => {
+  await createOddling(page, false);
+  await expect(page.getByLabel("最突出的性格属性")).toBeVisible();
+  const birthDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "保存图片" }).click();
+  expect((await birthDownload).suggestedFilename()).toMatch(/^oddling-birth-portrait\.png$/);
+
+  await page.getByRole("button", { name: "带它回巢穴" }).click();
+  await completeDaily(page);
+  const dailyDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "保存图片" }).click();
+  expect((await dailyDownload).suggestedFilename()).toMatch(/^oddling-daily-portrait\.png$/);
+
+  await page.getByRole("button", { name: "复制链接" }).click();
+  await page.goto("/me");
+  await expect(page.getByText("公开分享")).toBeVisible();
+  await page.getByRole("combobox", { name: /分享有效期/ }).selectOption("90");
+  await page.getByRole("button", { name: "撤销" }).click();
+  await expect(page.getByText("还没有公开链接")).toBeVisible();
 });
 
 test("settings support rename, themes, export and guarded deletion", async ({ page }) => {

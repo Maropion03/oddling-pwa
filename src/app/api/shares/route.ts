@@ -20,10 +20,11 @@ export async function POST(request: NextRequest) {
       avatar_id: avatarRow.id,
       public_token: share.id,
       public_snapshot: share.snapshot,
+      expires_at: share.expiresAt,
     });
     assertQuery(error, "创建分享失败");
     await supabase.from("product_events").insert({ user_id: user.id, event_name: "share_created", properties: {} });
-    return NextResponse.json({ token: share.id, snapshot: share.snapshot }, { status: 201 });
+    return NextResponse.json({ token: share.id, snapshot: share.snapshot, expiresAt: share.expiresAt }, { status: 201 });
   } catch (error) {
     return apiError(error);
   }

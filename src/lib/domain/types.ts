@@ -18,12 +18,25 @@ export interface DailyQuestion {
 
 export interface AvatarParts {
   body: string;
+  color?: "coral" | "blue" | "yellow" | "green" | "violet";
   eyes: string;
   mouth: string;
   head: string | null;
   back: string | null;
   textures: string[];
   handheld: string | null;
+}
+
+export interface TraitHighlight {
+  key: TraitKey;
+  label: string;
+  value: number;
+}
+
+export interface PersonalityRead {
+  title: string;
+  description: string;
+  highlights: TraitHighlight[];
 }
 
 export interface Avatar {
@@ -84,6 +97,7 @@ export interface PublicAvatarSnapshot {
 export interface ShareRecord {
   id: string;
   createdAt: string;
+  expiresAt: string | null;
   snapshot: PublicAvatarSnapshot;
 }
 

@@ -29,3 +29,7 @@ export const guestInteractionSchema = z.object({
   visitorId: z.uuid(),
   action: z.enum(["poke", "feed", "label"]),
 });
+
+export const shareExpirySchema = z.object({
+  expiresInDays: z.union([z.literal(7), z.literal(30), z.literal(90), z.null()]),
+});

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/navigation/app-shell";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { StickerCard } from "@/components/sticker/sticker-card";
+import { ResultImageMaker } from "@/components/share/result-image-maker";
 import { useOddling } from "@/components/providers/oddling-provider";
 import type { DailyEntry } from "@/lib/domain/types";
 
@@ -145,6 +146,7 @@ export function HomeView() {
                 </div>
                 {shareUrl && <a className="share-preview-link" href={shareUrl}>预览好友看到的页面 →</a>}
                 <p className="privacy-note">分享只包含角色快照和贴纸，不包含你的回答。</p>
+                <ResultImageMaker avatar={avatar} entry={completed}/>
               </motion.div>
             ) : (
               <motion.form key="question" className="daily-form" onSubmit={submit} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}>
