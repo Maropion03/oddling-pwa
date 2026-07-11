@@ -150,10 +150,11 @@ npm run test
 npm run test:db
 npm run build
 npm run test:e2e
+ODDLING_BASE_URL=https://oddling-pwa.vercel.app npm run test:production
 npm audit --omit=dev
 ```
 
-端到端测试覆盖 Chromium、Firefox、WebKit、Android Chrome 与 iPhone Safari 五个项目，包括创建、每日变异、收藏册、设置、分享隐私、访客幂等互动、PWA 离线壳、无障碍与响应式溢出检查。
+端到端测试覆盖 Chromium、Firefox、WebKit、Android Chrome 与 iPhone Safari 五个项目，包括创建、每日变异、收藏册、设置、分享隐私、访客幂等互动、PWA 离线壳、无障碍与响应式溢出检查。生产测试会使用两个隔离浏览器会话验证 Supabase 云同步与跨设备分享，并在完成后删除测试账号。
 
 ## 云端配置
 
