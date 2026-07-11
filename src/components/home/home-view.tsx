@@ -20,6 +20,7 @@ export function HomeView() {
   const [revealed, setRevealed] = useState<DailyEntry | null>(null);
   const [sharing, setSharing] = useState<"idle" | "copied">("idle");
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [dailyAction, setDailyAction] = useState<"idle" | "rerolling" | "submitting">("idle");
   const avatar = state.avatar;
 
   useEffect(() => {
@@ -33,10 +34,25 @@ export function HomeView() {
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    if (answer.trim().length < 1 || answer.length > 60 || todayEntry) return;
-    const entry = await submitDailyAnswer(answer);
-    setRevealed(entry);
-    setAnswer("");
+    if (answer.trim().length < 1 || answer.length > 60 || todayEntry || dailyAction !== "idle") return;
+    setDailyAction("submitting");
+    try {
+      const entry = await submitDailyAnswer(answer);
+      setRevealed(entry);
+      setAnswer("");
+    } finally {
+      setDailyAction("idle");
+    }
+  }
+
+  async function reroll() {
+    if (dailyAction !== "idle") return;
+    setDailyAction("rerolling");
+    try {
+      await rerollQuestion();
+    } finally {
+      setDailyAction("idle");
+    }
   }
 
   async function share() {
@@ -108,8 +124,8 @@ export function HomeView() {
           <div className="daily-panel__head">
             <span className="daily-number">DAY {String(state.entries.length + (todayEntry ? 0 : 1)).padStart(2, "0")}</span>
             {!completed && (
-              <button className="icon-action" onClick={() => void rerollQuestion()} disabled={Boolean(state.rerolls[today])} title={state.rerolls[today] ? "今天已经换过题" : "换一道题"}>
-                <RefreshCw size={18}/><span>{state.rerolls[today] ? "已换题" : "换一题"}</span>
+              <button className="icon-action" onClick={() => void reroll()} disabled={Boolean(state.rerolls[today]) || dailyAction !== "idle"} title={state.rerolls[today] ? "今天已经换过题" : "换一道题"}>
+                <RefreshCw size={18}/><span>{dailyAction === "rerolling" ? "换题中" : state.rerolls[today] ? "已换题" : "换一题"}</span>
               </button>
             )}
           </div>
@@ -136,10 +152,10 @@ export function HomeView() {
                 <h2>{todayQuestion.prompt}</h2>
                 <div className="field">
                   <label className="sr-only" htmlFor="daily-answer">今天的回答</label>
-                  <textarea id="daily-answer" className="textarea" maxLength={60} placeholder="一句话就好。" value={answer} onChange={(event) => setAnswer(event.target.value)} />
+                  <textarea id="daily-answer" className="textarea" maxLength={60} placeholder="一句话就好。" value={answer} disabled={dailyAction !== "idle"} onChange={(event) => setAnswer(event.target.value)} />
                   <span className="field-meta"><span>提交后今天不能重答</span><span>{answer.length}/60</span></span>
                 </div>
-                <button className="btn btn--primary" disabled={!answer.trim()} type="submit">喂给它 <Send size={18}/></button>
+                <button className="btn btn--primary" disabled={!answer.trim() || dailyAction !== "idle"} type="submit">{dailyAction === "submitting" ? "正在消化" : "喂给它"} <Send size={18}/></button>
                 <p className="privacy-note">没有连续签到。忘记回来时，它只会继续待着。</p>
               </motion.form>
             )}

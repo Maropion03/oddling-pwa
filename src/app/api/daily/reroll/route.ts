@@ -13,8 +13,12 @@ export async function POST(request: NextRequest) {
     const { data: avatar, error: avatarError } = await supabase.from("avatars").select("id,seed").eq("owner_id", user.id).single();
     assertQuery(avatarError);
     if (!avatar) throw new ApiError(404, "分身不存在");
-    const { data: prompt, error: promptError } = await supabase.from("daily_prompts").select("*").eq("avatar_id", avatar.id).eq("local_date", input.date).maybeSingle();
-    assertQuery(promptError);
+    const [{ data: prompt, error: promptError }, { data: entry, error: entryError }] = await Promise.all([
+      supabase.from("daily_prompts").select("*").eq("avatar_id", avatar.id).eq("local_date", input.date).maybeSingle(),
+      supabase.from("daily_entries").select("id").eq("avatar_id", avatar.id).eq("local_date", input.date).maybeSingle(),
+    ]);
+    assertQuery(promptError); assertQuery(entryError);
+    if (entry) throw new ApiError(409, "今天已经回答过了");
     if (!prompt || prompt.question_id !== input.currentQuestionId) throw new ApiError(409, "当前问题已经变化");
     if (prompt.reroll_used) throw new ApiError(409, "今天已经换过题");
     const { data: history, error: historyError } = await supabase.from("daily_entries").select("question_id,local_date").eq("avatar_id", avatar.id).order("local_date", { ascending: false }).limit(30);
@@ -25,7 +29,7 @@ export async function POST(request: NextRequest) {
       history: [...(history ?? [])].reverse().map((item) => ({ date: item.local_date, questionId: item.question_id })),
       excludeId: input.currentQuestionId,
     });
-    const { error } = await supabase.from("daily_prompts").update({ question_id: question.id, reroll_used: true }).eq("id", prompt.id).eq("reroll_used", false);
+    const { error } = await supabase.from("daily_prompts").update({ question_id: question.id, reroll_used: true }).eq("id", prompt.id).eq("reroll_used", false).select("id").single();
     assertQuery(error, "换题失败");
     return NextResponse.json({ question });
   } catch (error) {
