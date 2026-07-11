@@ -94,11 +94,11 @@ export function CreateFlow() {
         <section className="reveal-stage">
           <p className="eyebrow">SPECIMEN FOUND</p>
           <AvatarFigure parts={revealedAvatar.parts} name={name || revealedAvatar.name} />
-          <span className="reveal-stamp">初次出现<br/>{new Date().toLocaleDateString("zh-CN")}</span>
+          <span className="reveal-stamp">初次出现 {new Date().toLocaleDateString("zh-CN")}</span>
         </section>
         <section className="reveal-copy">
           <Wordmark compact />
-          <h1 className="page-title">它有一点像你，<br/>但不打算承认。</h1>
+          <h1 className="page-title">它有一点像你，但不打算承认。</h1>
           <p className="personality-title">{personality.title}</p>
           <p className="lede">{personality.description}</p>
           <div className="trait-highlights" aria-label="最突出的性格属性">

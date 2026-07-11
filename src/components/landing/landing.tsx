@@ -36,7 +36,7 @@ export function Landing() {
         >
           <p className="eyebrow">AI ALTER EGO TOY</p>
           <Wordmark />
-          <h1 className="display-title">把另一个你<br/>放出来。</h1>
+          <h1 className="display-title">把另一个你放出来。</h1>
           <p className="lede">回答四个怪问题，得到一个不完全受你控制的数字分身。以后每天一句话，看它继续长歪。</p>
           <div className="landing__actions">
             <Link className="btn btn--primary" href={hydrated && state.avatar ? "/home" : "/create"}>
