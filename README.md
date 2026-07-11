@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <img src="public/promo/oddling-hero.png" alt="Oddling 怪可爱分身" width="720" />
+</p>
+
+<p align="center">
   <img alt="version" src="https://img.shields.io/badge/version-0.1.0-8b5cf6?style=flat-square" />
   <img alt="license" src="https://img.shields.io/badge/license-MIT-3b82f6?style=flat-square" />
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square" />
