@@ -22,34 +22,97 @@ const BODY_PATHS: Record<string, string> = {
   pebble: "M57 67C82 35 153 27 186 58C219 90 217 178 178 207C139 236 69 219 43 184C18 151 29 103 57 67Z",
 };
 
-function Eyes({ token }: { token: string }) {
-  if (token === "sleepy") return <><path d="M82 116Q96 126 110 116"/><path d="M144 116Q158 126 172 116"/></>;
-  if (token === "wide") return <><circle cx="96" cy="118" r="13"/><circle cx="158" cy="118" r="13"/></>;
-  if (token === "spark") return <><path d="M95 104L99 114L109 118L99 122L95 132L91 122L81 118L91 114Z"/><circle cx="158" cy="118" r="7"/></>;
-  if (token === "side") return <><circle cx="101" cy="118" r="7"/><circle cx="163" cy="118" r="7"/></>;
-  if (token === "mismatch") return <><circle cx="96" cy="118" r="9"/><path d="M145 118Q158 105 172 118Q158 132 145 118Z"/></>;
-  if (token === "line") return <><path d="M84 118H108"/><path d="M146 118H170"/></>;
-  if (token === "moon") return <><path d="M105 105A14 14 0 1 0 105 131A10 14 0 1 1 105 105Z"/><circle cx="158" cy="118" r="7"/></>;
-  return <><circle cx="96" cy="118" r="7"/><circle cx="158" cy="118" r="7"/></>;
+function SketchyFilter() {
+  return (
+    <defs>
+      <filter id="sketchy" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
+      </filter>
+    </defs>
+  );
 }
 
-function Mouth({ token }: { token: string }) {
-  if (token === "smile") return <path d="M111 157Q127 172 144 157"/>;
-  if (token === "o") return <circle cx="127" cy="160" r="9"/>;
-  if (token === "fang") return <path d="M111 154Q127 169 145 154M137 159L141 169L146 158"/>;
-  if (token === "wave") return <path d="M108 160Q118 150 127 160Q136 170 147 159"/>;
-  if (token === "tiny") return <path d="M122 160H133"/>;
-  return <path d="M113 160H142"/>;
+function Eyes({ token, animated }: { token: string; animated?: boolean }) {
+  const eyeContent = (() => {
+    if (token === "sleepy") return <><path d="M82 116Q96 126 110 116"/><path d="M144 116Q158 126 172 116"/></>;
+    if (token === "wide") return <><circle cx="96" cy="118" r="13"/><circle cx="158" cy="118" r="13"/></>;
+    if (token === "spark") return <><path d="M95 104L99 114L109 118L99 122L95 132L91 122L81 118L91 114Z"/><circle cx="158" cy="118" r="7"/></>;
+    if (token === "side") return <><circle cx="101" cy="118" r="7"/><circle cx="163" cy="118" r="7"/></>;
+    if (token === "mismatch") return <><circle cx="96" cy="118" r="9"/><path d="M145 118Q158 105 172 118Q158 132 145 118Z"/></>;
+    if (token === "line") return <><path d="M84 118H108"/><path d="M146 118H170"/></>;
+    if (token === "moon") return <><path d="M105 105A14 14 0 1 0 105 131A10 14 0 1 1 105 105Z"/><circle cx="158" cy="118" r="7"/></>;
+    return <><circle cx="96" cy="118" r="7"/><circle cx="158" cy="118" r="7"/></>;
+  })();
+
+  return (
+    <motion.g
+      animate={animated ? {
+        scaleY: [1, 1, 0.1, 1, 1],
+      } : undefined}
+      transition={{
+        duration: 4,
+        repeat: Infinity,
+        repeatDelay: 1,
+        times: [0, 0.85, 0.9, 0.95, 1],
+      }}
+      style={{ transformOrigin: "127px 118px" }}
+    >
+      {eyeContent}
+    </motion.g>
+  );
 }
 
-function HeadPart({ token }: { token: string | null }) {
+function Mouth({ token, animated }: { token: string; animated?: boolean }) {
+  const mouthContent = (() => {
+    if (token === "smile") return <path d="M111 157Q127 172 144 157"/>;
+    if (token === "o") return <circle cx="127" cy="160" r="9"/>;
+    if (token === "fang") return <path d="M111 154Q127 169 145 154M137 159L141 169L146 158"/>;
+    if (token === "wave") return <path d="M108 160Q118 150 127 160Q136 170 147 159"/>;
+    if (token === "tiny") return <path d="M122 160H133"/>;
+    return <path d="M113 160H142"/>;
+  })();
+
+  return (
+    <motion.g
+      animate={animated ? { scale: [1, 1.05, 1] } : undefined}
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      style={{ transformOrigin: "127px 160px" }}
+    >
+      {mouthContent}
+    </motion.g>
+  );
+}
+
+function HeadPart({ token, animated }: { token: string | null; animated?: boolean }) {
   if (!token) return null;
-  if (token === "sprout") return <g><path d="M127 51C120 28 127 16 136 8"/><path className="avatar-fill--green" fill={AVATAR_COLORS.green} d="M136 8C157 6 165 17 151 29C136 28 130 20 136 8Z"/></g>;
-  if (token === "antenna") return <g><path d="M127 50L137 13"/><circle className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} cx="138" cy="10" r="8"/></g>;
-  if (token === "paper-crown") return <path className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} d="M93 55L91 24L112 39L128 16L143 39L166 25L162 58Z"/>;
-  if (token === "tiny-cloud") return <path className="avatar-fill--cream" fill={AVATAR_COLORS.cream} d="M99 47C99 32 112 26 122 32C133 17 156 27 154 42C170 43 170 60 158 64H102C88 61 89 48 99 47Z"/>;
-  if (token === "ribbon") return <g className="avatar-fill--blue" fill={AVATAR_COLORS.blue}><path d="M122 52C101 48 94 31 104 23C116 21 125 31 127 44Z"/><path d="M129 45C135 27 151 20 160 29C160 42 148 52 131 53Z"/><circle cx="128" cy="48" r="8"/></g>;
-  return <g><path d="M128 51L128 20"/><path className="avatar-fill--blue" fill={AVATAR_COLORS.blue} d="M115 17H143L137 5H121Z"/></g>;
+
+  const headContent = (() => {
+    if (token === "sprout") return <g><path d="M127 51C120 28 127 16 136 8"/><path className="avatar-fill--green" fill={AVATAR_COLORS.green} d="M136 8C157 6 165 17 151 29C136 28 130 20 136 8Z"/></g>;
+    if (token === "antenna") return <g><path d="M127 50L137 13"/><circle className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} cx="138" cy="10" r="8"/></g>;
+    if (token === "paper-crown") return <path className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} d="M93 55L91 24L112 39L128 16L143 39L166 25L162 58Z"/>;
+    if (token === "tiny-cloud") return <path className="avatar-fill--cream" fill={AVATAR_COLORS.cream} d="M99 47C99 32 112 26 122 32C133 17 156 27 154 42C170 43 170 60 158 64H102C88 61 89 48 99 47Z"/>;
+    if (token === "ribbon") return <g className="avatar-fill--blue" fill={AVATAR_COLORS.blue}><path d="M122 52C101 48 94 31 104 23C116 21 125 31 127 44Z"/><path d="M129 45C135 27 151 20 160 29C160 42 148 52 131 53Z"/><circle cx="128" cy="48" r="8"/></g>;
+    return <g><path d="M128 51L128 20"/><path className="avatar-fill--blue" fill={AVATAR_COLORS.blue} d="M115 17H143L137 5H121Z"/></g>;
+  })();
+
+  const wiggle = (() => {
+    if (token === "antenna") return { rotate: [0, 5, -5, 0] };
+    if (token === "sprout") return { rotate: [0, 3, -3, 0], y: [0, -2, 0] };
+    return { rotate: [0, 2, -2, 0] };
+  })();
+
+  const duration = token === "antenna" ? 2 : token === "sprout" ? 2.5 : 3;
+
+  return (
+    <motion.g
+      animate={animated ? wiggle : undefined}
+      transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+      style={{ transformOrigin: "127px 50px" }}
+    >
+      {headContent}
+    </motion.g>
+  );
 }
 
 function BackPart({ token }: { token: string | null }) {
@@ -108,7 +171,10 @@ export function AvatarFigure({
       aria-label={`${name} 的怪可爱分身`}
     >
       <svg viewBox="0 0 250 250" aria-hidden="true" focusable="false">
-        <g className="avatar-line avatar-back"><BackPart token={parts.back}/></g>
+        <SketchyFilter />
+        <g className="avatar-line avatar-back" filter="url(#sketchy)">
+          <BackPart token={parts.back} />
+        </g>
         <motion.g
           className="avatar-line"
           animate={animated ? { y: [0, -4, 0] } : undefined}
@@ -116,9 +182,10 @@ export function AvatarFigure({
         >
           <path className="avatar-body" fill={bodyColor} d={BODY_PATHS[parts.body] ?? BODY_PATHS.bean}/>
           <g className="avatar-texture">{parts.textures.map((token, index) => <Texture key={token} token={token} index={index}/>)}</g>
-          <g className="avatar-face"><Eyes token={parts.eyes}/><Mouth token={parts.mouth}/></g>
-          <HeadPart token={parts.head}/>
-          <Handheld token={parts.handheld}/>
+          <Eyes token={parts.eyes} animated={animated} />
+          <Mouth token={parts.mouth} animated={animated} />
+          <HeadPart token={parts.head} animated={animated} />
+          <Handheld token={parts.handheld} />
         </motion.g>
       </svg>
     </motion.div>
