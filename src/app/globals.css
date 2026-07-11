@@ -444,11 +444,11 @@ button {
   stroke-width: 5;
 }
 
-.avatar-body { fill: var(--avatar-body, var(--coral)); }
-.avatar-fill--coral { fill: var(--coral); }
-.avatar-fill--blue { fill: var(--blue); }
-.avatar-fill--yellow { fill: var(--yellow); }
-.avatar-fill--green { fill: var(--green); }
+.avatar-body { fill: var(--avatar-body, #ff6f59); }
+.avatar-fill--coral { fill: var(--coral, #ff6f59); }
+.avatar-fill--blue { fill: var(--blue, #2b59c3); }
+.avatar-fill--yellow { fill: var(--yellow, #f3cb42); }
+.avatar-fill--green { fill: var(--green, #d2ff45); }
 .avatar-fill--cream { fill: #f3eedc; }
 .avatar-fill--ink { fill: #202124; }
 .avatar-face { fill: #202124; }
@@ -855,6 +855,10 @@ button {
   box-shadow: 6px 7px 0 var(--blue);
   transform: translateY(-4px) rotate(-1deg);
 }
+
+/* A selected answer must stay legible even when the page is using dark mode. */
+.choice.is-selected .choice__copy strong { color: #202124; }
+.choice.is-selected .choice__copy small { color: #3f403b; }
 
 .choice__shape {
   place-self: center;
@@ -1320,12 +1324,14 @@ button {
 .guest-choice,
 .guest-result { display: grid; gap: 24px; }
 .guest-action-list { display: grid; }
-.guest-action-list button { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 16px; min-height: 86px; padding: 14px 4px; border-top: 1px solid var(--ink-soft); background: transparent; color: var(--ink); cursor: pointer; text-align: left; }
+.guest-action-list button { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 16px; min-height: 86px; padding: 14px 4px; border-top: 1px solid var(--ink-soft); background: transparent; color: var(--ink); cursor: pointer; text-align: left; transition: background 160ms ease; }
 .guest-action-list button:last-child { border-bottom: 1px solid var(--ink-soft); }
-.guest-action-list button:hover { padding-left: 12px; background: var(--paper-deep); }
+.guest-action-list button:hover:not(:disabled), .guest-action-list button.is-pending { background: var(--paper-deep); }
+.guest-action-list button:disabled { cursor: wait; }
 .guest-action-list svg { color: var(--blue); }
-.guest-action-list span { display: grid; gap: 4px; }
-.guest-action-list small { color: var(--ink-soft); }
+.guest-action__icon { display: grid; place-items: center; width: 28px; height: 28px; }
+.guest-action__copy { display: grid; gap: 4px; }
+.guest-action__copy small { color: var(--ink-soft); }
 .guest-result .sticker { max-width: 360px; }
 
 .public-empty { display: grid; min-height: 100svh; place-items: center; align-content: center; gap: 36px; padding: var(--page-pad); }

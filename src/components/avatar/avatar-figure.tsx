@@ -5,6 +5,15 @@ import { clsx } from "clsx";
 import type { CSSProperties } from "react";
 import type { AvatarParts } from "@/lib/domain/types";
 
+const AVATAR_COLORS = {
+  coral: "#ff6f59",
+  blue: "#2b59c3",
+  yellow: "#f3cb42",
+  green: "#d2ff45",
+  cream: "#f3eedc",
+  ink: "#202124",
+} as const;
+
 const BODY_PATHS: Record<string, string> = {
   bean: "M76 50C111 20 176 30 194 81C214 136 192 207 130 218C75 228 32 185 39 126C43 91 51 70 76 50Z",
   pear: "M119 28C151 27 168 65 169 91C201 112 212 165 185 201C157 238 89 232 55 202C19 170 35 112 71 91C76 58 90 29 119 28Z",
@@ -35,22 +44,22 @@ function Mouth({ token }: { token: string }) {
 
 function HeadPart({ token }: { token: string | null }) {
   if (!token) return null;
-  if (token === "sprout") return <g><path d="M127 51C120 28 127 16 136 8"/><path className="avatar-fill--green" d="M136 8C157 6 165 17 151 29C136 28 130 20 136 8Z"/></g>;
-  if (token === "antenna") return <g><path d="M127 50L137 13"/><circle className="avatar-fill--yellow" cx="138" cy="10" r="8"/></g>;
-  if (token === "paper-crown") return <path className="avatar-fill--yellow" d="M93 55L91 24L112 39L128 16L143 39L166 25L162 58Z"/>;
-  if (token === "tiny-cloud") return <path className="avatar-fill--cream" d="M99 47C99 32 112 26 122 32C133 17 156 27 154 42C170 43 170 60 158 64H102C88 61 89 48 99 47Z"/>;
-  if (token === "ribbon") return <g className="avatar-fill--blue"><path d="M122 52C101 48 94 31 104 23C116 21 125 31 127 44Z"/><path d="M129 45C135 27 151 20 160 29C160 42 148 52 131 53Z"/><circle cx="128" cy="48" r="8"/></g>;
-  return <g><path d="M128 51L128 20"/><path className="avatar-fill--blue" d="M115 17H143L137 5H121Z"/></g>;
+  if (token === "sprout") return <g><path d="M127 51C120 28 127 16 136 8"/><path className="avatar-fill--green" fill={AVATAR_COLORS.green} d="M136 8C157 6 165 17 151 29C136 28 130 20 136 8Z"/></g>;
+  if (token === "antenna") return <g><path d="M127 50L137 13"/><circle className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} cx="138" cy="10" r="8"/></g>;
+  if (token === "paper-crown") return <path className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} d="M93 55L91 24L112 39L128 16L143 39L166 25L162 58Z"/>;
+  if (token === "tiny-cloud") return <path className="avatar-fill--cream" fill={AVATAR_COLORS.cream} d="M99 47C99 32 112 26 122 32C133 17 156 27 154 42C170 43 170 60 158 64H102C88 61 89 48 99 47Z"/>;
+  if (token === "ribbon") return <g className="avatar-fill--blue" fill={AVATAR_COLORS.blue}><path d="M122 52C101 48 94 31 104 23C116 21 125 31 127 44Z"/><path d="M129 45C135 27 151 20 160 29C160 42 148 52 131 53Z"/><circle cx="128" cy="48" r="8"/></g>;
+  return <g><path d="M128 51L128 20"/><path className="avatar-fill--blue" fill={AVATAR_COLORS.blue} d="M115 17H143L137 5H121Z"/></g>;
 }
 
 function BackPart({ token }: { token: string | null }) {
   if (!token) return null;
-  if (token === "wings") return <g className="avatar-fill--blue"><path d="M55 111C22 88 5 121 32 143C9 153 25 182 58 166Z"/><path d="M192 111C225 88 242 121 215 143C238 153 222 182 189 166Z"/></g>;
-  if (token === "shell") return <path className="avatar-fill--yellow" d="M178 102C224 100 229 171 189 188C170 169 168 128 178 102Z"/>;
-  if (token === "flag") return <g><path d="M188 85L213 43"/><path className="avatar-fill--blue" d="M211 43L239 54L219 69Z"/></g>;
-  if (token === "tail") return <path className="avatar-fill--coral" d="M187 174C232 163 237 204 212 212C223 196 211 187 188 193Z"/>;
-  if (token === "shadow") return <path className="avatar-fill--ink" opacity=".18" d="M176 89C224 104 231 188 177 206C194 168 195 127 176 89Z"/>;
-  return <path className="avatar-fill--blue" d="M185 99L224 126L187 144Z"/>;
+  if (token === "wings") return <g className="avatar-fill--blue" fill={AVATAR_COLORS.blue}><path d="M55 111C22 88 5 121 32 143C9 153 25 182 58 166Z"/><path d="M192 111C225 88 242 121 215 143C238 153 222 182 189 166Z"/></g>;
+  if (token === "shell") return <path className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} d="M178 102C224 100 229 171 189 188C170 169 168 128 178 102Z"/>;
+  if (token === "flag") return <g><path d="M188 85L213 43"/><path className="avatar-fill--blue" fill={AVATAR_COLORS.blue} d="M211 43L239 54L219 69Z"/></g>;
+  if (token === "tail") return <path className="avatar-fill--coral" fill={AVATAR_COLORS.coral} d="M187 174C232 163 237 204 212 212C223 196 211 187 188 193Z"/>;
+  if (token === "shadow") return <path className="avatar-fill--ink" fill={AVATAR_COLORS.ink} opacity=".18" d="M176 89C224 104 231 188 177 206C194 168 195 127 176 89Z"/>;
+  return <path className="avatar-fill--blue" fill={AVATAR_COLORS.blue} d="M185 99L224 126L187 144Z"/>;
 }
 
 function Texture({ token, index }: { token: string; index: number }) {
@@ -58,14 +67,14 @@ function Texture({ token, index }: { token: string; index: number }) {
   if (token === "freckles") return <g><circle cx={103 + shift} cy="140" r="3"/><circle cx={113 + shift} cy="145" r="2"/><circle cx={94 + shift} cy="147" r="2"/></g>;
   if (token === "stripes") return <g><path d={`M80 ${170 + shift / 3}Q125 ${150 + shift / 3} 175 ${170 + shift / 3}`}/><path d={`M77 ${183 + shift / 3}Q125 ${163 + shift / 3} 178 ${183 + shift / 3}`}/></g>;
   if (token === "dots") return <g><circle cx={90 + shift} cy="177" r="5"/><circle cx={120 + shift} cy="188" r="4"/><circle cx={155 - shift} cy="172" r="3"/></g>;
-  if (token === "patch") return <path className="avatar-fill--cream" d={`M${82 + shift} 166L${111 + shift} 160L${115 + shift} 187L${87 + shift} 191Z`}/>;
-  if (token === "stars") return <path className="avatar-fill--yellow" d={`M${100 + shift} 162L${104 + shift} 172L${115 + shift} 174L${106 + shift} 181L${109 + shift} 192L${100 + shift} 186L${91 + shift} 192L${94 + shift} 181L${85 + shift} 174L${96 + shift} 172Z`}/>;
+  if (token === "patch") return <path className="avatar-fill--cream" fill={AVATAR_COLORS.cream} d={`M${82 + shift} 166L${111 + shift} 160L${115 + shift} 187L${87 + shift} 191Z`}/>;
+  if (token === "stars") return <path className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} d={`M${100 + shift} 162L${104 + shift} 172L${115 + shift} 174L${106 + shift} 181L${109 + shift} 192L${100 + shift} 186L${91 + shift} 192L${94 + shift} 181L${85 + shift} 174L${96 + shift} 172Z`}/>;
   return <path d={`M${83 + shift} 176Q${95 + shift} 161 ${107 + shift} 176Q${119 + shift} 191 ${131 + shift} 176`}/>;
 }
 
 function Handheld({ token }: { token: string | null }) {
   if (!token) return null;
-  return <g transform="translate(0 6)"><path d="M64 174L35 204"/><circle className="avatar-fill--yellow" cx="31" cy="209" r="12"/><path d="M55 178Q68 166 79 177"/></g>;
+  return <g transform="translate(0 6)"><path d="M64 174L35 204"/><circle className="avatar-fill--yellow" fill={AVATAR_COLORS.yellow} cx="31" cy="209" r="12"/><path d="M55 178Q68 166 79 177"/></g>;
 }
 
 export function AvatarFigure({
@@ -82,10 +91,10 @@ export function AvatarFigure({
   className?: string;
 }) {
   const bodyColor = {
-    coral: "var(--coral)",
-    blue: "var(--blue)",
-    yellow: "var(--yellow)",
-    green: "var(--green)",
+    coral: AVATAR_COLORS.coral,
+    blue: AVATAR_COLORS.blue,
+    yellow: AVATAR_COLORS.yellow,
+    green: AVATAR_COLORS.green,
     violet: "#A984E8",
   }[parts.color ?? "coral"];
   return (
@@ -105,7 +114,7 @@ export function AvatarFigure({
           animate={animated ? { y: [0, -4, 0] } : undefined}
           transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
         >
-          <path className="avatar-body" d={BODY_PATHS[parts.body] ?? BODY_PATHS.bean}/>
+          <path className="avatar-body" fill={bodyColor} d={BODY_PATHS[parts.body] ?? BODY_PATHS.bean}/>
           <g className="avatar-texture">{parts.textures.map((token, index) => <Texture key={token} token={token} index={index}/>)}</g>
           <g className="avatar-face"><Eyes token={parts.eyes}/><Mouth token={parts.mouth}/></g>
           <HeadPart token={parts.head}/>

@@ -64,6 +64,7 @@ test("public share is private, guest interaction is idempotent, and conversion C
 test("result cards can be saved and public links can be managed", async ({ page }) => {
   await createOddling(page, false);
   await expect(page.getByLabel("最突出的性格属性")).toBeVisible();
+  await expect(page.locator(".result-share-card .avatar-body")).toHaveAttribute("fill", /^#/);
   const birthDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "保存图片" }).click();
   expect((await birthDownload).suggestedFilename()).toMatch(/^oddling-birth-portrait\.png$/);

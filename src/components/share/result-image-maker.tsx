@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { Download, ImageIcon, RectangleVertical, Square } from "lucide-react";
 import { toPng } from "html-to-image";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
@@ -8,6 +8,21 @@ import { getPersonalityRead } from "@/lib/domain/engine";
 import type { Avatar, DailyEntry } from "@/lib/domain/types";
 
 type Format = "portrait" | "square";
+
+// html-to-image renders the card inside an isolated SVG document. Keep every
+// colour token on the card itself so the exported image cannot depend on the
+// page theme or on inherited :root variables.
+const EXPORT_COLOR_TOKENS = {
+  "--paper": "#f3eedc",
+  "--paper-deep": "#e9e0c5",
+  "--ink": "#202124",
+  "--ink-soft": "#55564f",
+  "--coral": "#ff6f59",
+  "--blue": "#2b59c3",
+  "--yellow": "#f3cb42",
+  "--green": "#d2ff45",
+  "--white": "#fffdf4",
+} as CSSProperties;
 
 export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: DailyEntry | null }) {
   const [format, setFormat] = useState<Format>("portrait");
@@ -45,7 +60,7 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
         </div>
       </div>
 
-      <div className={`result-share-card result-share-card--${format}`} ref={cardRef}>
+      <div className={`result-share-card result-share-card--${format}`} ref={cardRef} style={EXPORT_COLOR_TOKENS}>
         <div className="result-share-card__brand"><span className="result-share-card__eye">•</span>ODDLING<span>↘</span></div>
         <p className="result-share-card__kicker">{isDaily ? `DAY ${String(avatar.mutationCount).padStart(2, "0")}` : "SPECIMEN FOUND"}</p>
         <AvatarFigure parts={avatar.parts} name={avatar.name} size="medium" animated={false}/>
