@@ -18,7 +18,7 @@ try {
   await page.getByRole("button", { name: "下一题" }).click();
   await page.getByRole("textbox", { name: "你的回答" }).fill("生产测试产生的临时分身");
   await page.getByRole("button", { name: "开始生成" }).click();
-  await page.getByText("SPECIMEN FOUND").waitFor({ timeout: 20_000 });
+  await page.locator(".reveal-stage").getByText("SPECIMEN FOUND", { exact: true }).waitFor({ timeout: 20_000 });
   ownerCreated = true;
   await page.getByRole("button", { name: "带它回巢穴" }).click();
   await page.waitForURL(/\/home$/);
