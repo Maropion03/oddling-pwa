@@ -1172,6 +1172,21 @@ button {
   font-size: 0.78rem;
   font-weight: 850;
 }
+.daily-archive-flipper {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.daily-archive-page {
+  grid-area: 1 / 1;
+  display: grid;
+  align-content: center;
+  gap: clamp(20px, 3.5vw, 34px);
+}
 
 .album-page,
 .me-page {

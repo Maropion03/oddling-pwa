@@ -22,6 +22,7 @@ export function HomeView() {
   const [sharing, setSharing] = useState<"idle" | "copied">("idle");
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [dailyAction, setDailyAction] = useState<"idle" | "rerolling" | "submitting">("idle");
+  const [archivePage, setArchivePage] = useState(1);
   const avatar = state.avatar;
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function HomeView() {
       const entry = await submitDailyAnswer(answer);
       setRevealed(entry);
       setAnswer("");
+      setArchivePage(1);
     } finally {
       setDailyAction("idle");
     }
@@ -115,7 +117,7 @@ export function HomeView() {
           </div>
           <div className="nest-stage__figure">
             <span className="orbit-label orbit-label--left">变异 {avatar.mutationCount}</span>
-            <AvatarFigure parts={avatar.parts} name={avatar.name} />
+            <AvatarFigure parts={avatar.parts} name={avatar.name} size="medium" />
             <span className="orbit-label orbit-label--right">{avatar.traits.oddness > 58 ? "怪度偏高" : "暂时克制"}</span>
           </div>
           <p className="avatar-caption">{completed?.response ?? "它今天还没有形成新的意见。"}</p>
@@ -134,19 +136,48 @@ export function HomeView() {
           <AnimatePresence mode="wait">
             {completed ? (
               <motion.div key="complete" className="daily-complete" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}>
-                <span className="completion-mark"><Check size={26}/></span>
-                <p className="eyebrow">TODAY IS ARCHIVED</p>
-                <h2>{completed.question}</h2>
-                <blockquote>“{completed.answer}”</blockquote>
-                <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{completed.mutation.label}</strong></div>
-                <StickerCard sticker={completed.sticker} compact />
-                <div className="daily-share-actions">
-                  <button className="btn btn--blue" onClick={share}><Share2 size={18}/>发给一个熟人</button>
-                  <button className="btn" onClick={copyShare}>{sharing === "copied" ? <><Check size={18}/>链接已复制</> : <><Copy size={18}/>复制链接</>}</button>
+                <div className="daily-archive-flipper">
+                  <AnimatePresence initial={false}>
+                    {archivePage === 1 && (
+                      <motion.div
+                        key="page1"
+                        className="daily-archive-page"
+                        initial={{ x: -40, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -40, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <span className="completion-mark"><Check size={26}/></span>
+                        <p className="eyebrow">TODAY IS ARCHIVED</p>
+                        <h2>{completed.question}</h2>
+                        <blockquote>"{completed.answer}"</blockquote>
+                        <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{completed.mutation.label}</strong></div>
+                        <StickerCard sticker={completed.sticker} compact />
+                        <div className="daily-share-actions">
+                          <button className="btn btn--blue" onClick={share}><Share2 size={18}/>发给一个熟人</button>
+                          <button className="btn" onClick={copyShare}>{sharing === "copied" ? <><Check size={18}/>链接已复制</> : <><Copy size={18}/>复制链接</>}</button>
+                        </div>
+                        {shareUrl && <a className="share-preview-link" href={shareUrl}>预览好友看到的页面 →</a>}
+                        <p className="privacy-note">分享只包含角色快照和贴纸，不包含你的回答。</p>
+                        <button className="btn btn--primary" onClick={() => setArchivePage(2)}>去保存 →</button>
+                      </motion.div>
+                    )}
+                    {archivePage === 2 && (
+                      <motion.div
+                        key="page2"
+                        className="daily-archive-page"
+                        initial={{ x: 40, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 40, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <p className="eyebrow">READY TO POST</p>
+                        <ResultImageMaker avatar={avatar} entry={completed}/>
+                        <button className="btn" onClick={() => setArchivePage(1)}>← 返回</button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                {shareUrl && <a className="share-preview-link" href={shareUrl}>预览好友看到的页面 →</a>}
-                <p className="privacy-note">分享只包含角色快照和贴纸，不包含你的回答。</p>
-                <ResultImageMaker avatar={avatar} entry={completed}/>
               </motion.div>
             ) : (
               <motion.form key="question" className="daily-form" onSubmit={submit} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}>
