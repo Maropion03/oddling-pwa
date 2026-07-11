@@ -28,7 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
         </div>
         <div style={{ width: "45%", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", background: "#FF6F59", borderLeft: "5px solid #202124" }}>
           {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires a data URL image. */}
-          <img alt="" src={ogAvatarDataUrl(snapshot)} width="430" height="430" style={{ filter: "drop-shadow(16px 18px 0 rgba(32,33,36,.22))" }}/>
+          <img alt="" src={ogAvatarDataUrl(snapshot)} style={{ width: 430, height: 430, filter: "drop-shadow(16px 18px 0 rgba(32,33,36,.22))" }}/>
           <div style={{ position: "absolute", right: 42, bottom: 42, padding: "12px 16px", border: "3px solid #202124", borderRadius: 18, background: "#F3EEDC", fontSize: 24, fontWeight: 900 }}>{snapshot.name}</div>
         </div>
       </div>

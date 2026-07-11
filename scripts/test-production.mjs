@@ -31,7 +31,7 @@ try {
   await page.getByText("TODAY IS ARCHIVED").waitFor({ timeout: 20_000 });
 
   await page.getByRole("button", { name: "复制链接" }).click();
-  const preview = page.getByRole("link", { name: "预览好友看到的页面 →" });
+  const preview = page.getByRole("link", { name: "预览好友看到的页面" });
   await preview.waitFor({ timeout: 10_000 });
   const href = await preview.getAttribute("href");
   if (!href) throw new Error("Production share URL was not created");
@@ -40,12 +40,12 @@ try {
   if (!shareId) throw new Error("Production share token was not found");
   const ogImage = await page.request.get(`${baseURL}/api/og/${shareId}`);
   if (!ogImage.ok() || !ogImage.headers()["content-type"]?.includes("image/png")) {
-    throw new Error("Production dynamic OG image was not generated");
+    throw new Error(`Production dynamic OG image was not generated status=${ogImage.status()} contentType=${ogImage.headers()["content-type"] ?? "unknown"} body=${(await ogImage.text()).slice(0, 400)}`);
   }
 
   const guestPage = await guest.newPage();
   await guestPage.goto(shareUrl.href);
-  await guestPage.getByRole("button", { name: "投喂怪东西 来源不明，但大概能吃" }).click();
+  await guestPage.getByRole("button", { name: "投喂怪东西 来源不明但大概能吃" }).click();
   await guestPage.getByText("RELATIONSHIP").waitFor({ timeout: 15_000 });
   const firstResponse = await guestPage.getByRole("heading", { level: 2 }).textContent();
   await guestPage.reload();
