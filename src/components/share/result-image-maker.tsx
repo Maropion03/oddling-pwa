@@ -2,6 +2,7 @@
 
 import { useRef, useState, type CSSProperties } from "react";
 import { Download, ImageIcon, RectangleVertical, Square } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { toPng } from "html-to-image";
 import { AvatarFigure } from "@/components/avatar/avatar-figure";
 import { getPersonalityRead } from "@/lib/domain/engine";
@@ -9,9 +10,6 @@ import type { Avatar, DailyEntry } from "@/lib/domain/types";
 
 type Format = "portrait" | "square";
 
-// html-to-image renders the card inside an isolated SVG document. Keep every
-// colour token on the card itself so the exported image cannot depend on the
-// page theme or on inherited :root variables.
 const EXPORT_COLOR_TOKENS = {
   "--paper": "#f3eedc",
   "--paper-deep": "#e9e0c5",
@@ -24,12 +22,37 @@ const EXPORT_COLOR_TOKENS = {
   "--white": "#fffdf4",
 } as CSSProperties;
 
+const flipVariants = {
+  enter: (direction: number) => ({
+    rotateY: direction > 0 ? 90 : -90,
+    opacity: 0,
+    scale: 0.92,
+  }),
+  center: {
+    rotateY: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    rotateY: direction > 0 ? -90 : 90,
+    opacity: 0,
+    scale: 0.92,
+  }),
+};
+
 export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: DailyEntry | null }) {
   const [format, setFormat] = useState<Format>("portrait");
+  const [direction, setDirection] = useState(1);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const cardRef = useRef<HTMLDivElement>(null);
   const personality = getPersonalityRead(avatar.traits);
   const isDaily = Boolean(entry);
+
+  function switchFormat(newFormat: Format) {
+    if (newFormat === format) return;
+    setDirection(newFormat === "portrait" ? -1 : 1);
+    setFormat(newFormat);
+  }
 
   async function save() {
     if (!cardRef.current) return;
@@ -55,23 +78,38 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
       <div className="result-image-maker__top">
         <div><p className="eyebrow">READY TO POST</p><h2>{isDaily ? "把今天的变异带走" : "把第一次见面带走"}</h2></div>
         <div className="result-format-switch" role="group" aria-label="结果图尺寸">
-          <button type="button" aria-pressed={format === "portrait"} onClick={() => setFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
-          <button type="button" aria-pressed={format === "square"} onClick={() => setFormat("square")}><Square size={16}/>1:1</button>
+          <button type="button" aria-pressed={format === "portrait"} onClick={() => switchFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
+          <button type="button" aria-pressed={format === "square"} onClick={() => switchFormat("square")}><Square size={16}/>1:1</button>
         </div>
       </div>
 
-      <div className={`result-share-card result-share-card--${format}`} ref={cardRef} style={EXPORT_COLOR_TOKENS}>
-        <div className="result-share-card__brand"><span className="result-share-card__eye">•</span>ODDLING<span>↘</span></div>
-        <p className="result-share-card__kicker">{isDaily ? `DAY ${String(avatar.mutationCount).padStart(2, "0")}` : "SPECIMEN FOUND"}</p>
-        <AvatarFigure parts={avatar.parts} name={avatar.name} size="medium" animated={false}/>
-        <div className="result-share-card__copy">
-          <p className="result-share-card__name">{avatar.name}</p>
-          {isDaily && entry ? (
-            <><p className="result-share-card__line">{entry.response}</p><strong>{entry.mutation.label}</strong><span>{entry.sticker.title} · {entry.sticker.subtitle}</span></>
-          ) : (
-            <><strong>{personality.title}</strong><p className="result-share-card__line">{personality.description}</p><div className="result-share-card__traits">{personality.highlights.map((trait) => <span key={trait.key}>{trait.label} {trait.value}</span>)}</div></>
-          )}
-        </div>
+      <div className="result-share-card__flipper">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={format}
+            ref={cardRef}
+            className={`result-share-card result-share-card--${format}`}
+            style={EXPORT_COLOR_TOKENS}
+            custom={direction}
+            variants={flipVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.45, ease: "easeInOut" }}
+          >
+            <div className="result-share-card__brand"><span className="result-share-card__eye">•</span>ODDLING<span>↘</span></div>
+            <p className="result-share-card__kicker">{isDaily ? `DAY ${String(avatar.mutationCount).padStart(2, "0")}` : "SPECIMEN FOUND"}</p>
+            <AvatarFigure parts={avatar.parts} name={avatar.name} size="medium" animated={false}/>
+            <div className="result-share-card__copy">
+              <p className="result-share-card__name">{avatar.name}</p>
+              {isDaily && entry ? (
+                <><p className="result-share-card__line">{entry.response}</p><strong>{entry.mutation.label}</strong><span>{entry.sticker.title} · {entry.sticker.subtitle}</span></>
+              ) : (
+                <><strong>{personality.title}</strong><p className="result-share-card__line">{personality.description}</p><div className="result-share-card__traits">{personality.highlights.map((trait) => <span key={trait.key}>{trait.label} {trait.value}</span>)}</div></>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <div className="result-image-maker__actions">
