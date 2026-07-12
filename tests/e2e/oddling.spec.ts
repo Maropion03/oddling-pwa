@@ -110,6 +110,31 @@ test("result cards can be saved and public links can be managed", async ({ page 
   await expect(page.getByText("还没有公开链接")).toBeVisible();
 });
 
+test("daily export stays inside the desktop viewport", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "The fixed-pane assertion is desktop-specific");
+  await page.setViewportSize({ width: 1830, height: 1167 });
+  await createOddling(page);
+  await completeDaily(page);
+  await page.getByRole("button", { name: "去保存" }).click();
+  await expect(page.getByRole("button", { name: "保存图片" })).toBeVisible();
+  await expect(page.locator(".daily-archive-page")).toHaveCount(1);
+
+  for (const viewport of [{ width: 1830, height: 1167 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    const bounds = await page.evaluate(() => {
+      const panel = document.querySelector<HTMLElement>(".daily-panel")?.getBoundingClientRect();
+      const card = document.querySelector<HTMLElement>(".result-share-card")?.getBoundingClientRect();
+      const back = [...document.querySelectorAll<HTMLButtonElement>("button")].find((button) => button.textContent?.trim() === "返回")?.getBoundingClientRect();
+      return { documentHeight: document.documentElement.scrollHeight, viewportHeight: window.innerHeight, panel, card, back };
+    });
+
+    expect(bounds.documentHeight).toBeLessThanOrEqual(bounds.viewportHeight + 1);
+    expect(bounds.panel?.bottom).toBeLessThanOrEqual(bounds.viewportHeight + 1);
+    expect(bounds.card?.bottom).toBeLessThanOrEqual(bounds.viewportHeight + 1);
+    expect(bounds.back?.bottom).toBeLessThanOrEqual(bounds.viewportHeight + 1);
+  }
+});
+
 test("settings support rename, themes, export and guarded deletion", async ({ page }) => {
   await createOddling(page);
   await page.goto("/me");

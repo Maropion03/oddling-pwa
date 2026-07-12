@@ -166,13 +166,12 @@ export function HomeView() {
                     {archivePage === 2 && (
                       <motion.div
                         key="page2"
-                        className="daily-archive-page"
+                        className="daily-archive-page daily-archive-page--export"
                         initial={{ x: 40, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 40, opacity: 0 }}
                         transition={{ duration: 0.25 }}
                       >
-                        <p className="eyebrow">READY TO POST</p>
                         <ResultImageMaker avatar={avatar} entry={completed}/>
                         <button className="btn" onClick={() => setArchivePage(1)}>返回</button>
                       </motion.div>

@@ -1400,6 +1400,59 @@ button {
   .public-stage { min-height: 70svh; border-right: 0; border-bottom: var(--line); }
 }
 
+@media (min-width: 1081px) {
+  .home-layout {
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .nest-stage,
+  .daily-panel {
+    height: 100svh;
+    min-height: 0;
+  }
+
+  .daily-panel { overflow: hidden; }
+
+  .daily-complete {
+    grid-template-rows: minmax(0, 1fr);
+    align-content: stretch;
+    min-height: 0;
+    padding: clamp(14px, 2vh, 24px) 0;
+  }
+
+  .daily-archive-flipper {
+    height: 100%;
+    align-items: stretch;
+  }
+
+  .daily-archive-page {
+    min-height: 0;
+    gap: clamp(10px, 1.5vh, 16px);
+  }
+
+  .daily-archive-page--export {
+    align-content: start;
+    padding-top: clamp(12px, 2.5vh, 28px);
+  }
+
+  .daily-archive-page .result-image-maker {
+    gap: 12px;
+    margin-top: 0;
+    padding-top: 12px;
+  }
+
+  .daily-archive-page .result-image-maker__top h2 {
+    font-size: clamp(1.35rem, 2.1vw, 1.8rem);
+    line-height: .98;
+  }
+
+  .daily-archive-page .result-share-card { width: min(100%, 280px, 34svh); }
+  .daily-archive-page .result-image-maker__actions .btn,
+  .daily-archive-page > .btn { min-height: 40px; padding-block: 9px; }
+}
+
 @media (max-width: 760px) {
   .sticker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .identity-row, .settings-section { grid-template-columns: 1fr; }
