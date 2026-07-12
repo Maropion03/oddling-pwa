@@ -101,7 +101,7 @@ test("result cards can be saved and public links can be managed", async ({ page 
   await page.getByRole("button", { name: "保存图片" }).click();
   expect((await dailyDownload).suggestedFilename()).toMatch(/^oddling-daily-portrait\.png$/);
 
-  await page.getByRole("button", { name: "返回" }).click();
+  await page.getByRole("button", { name: "返回第一页" }).click();
   await page.getByRole("button", { name: "复制链接" }).click();
   await page.goto("/me");
   await expect(page.getByText("公开分享")).toBeVisible();
@@ -118,13 +118,15 @@ test("daily export stays inside the desktop viewport", async ({ page }, testInfo
   await page.getByRole("button", { name: "去保存" }).click();
   await expect(page.getByRole("button", { name: "保存图片" })).toBeVisible();
   await expect(page.locator(".daily-archive-page")).toHaveCount(1);
+  await expect(page.getByText("READY TO POST", { exact: true })).toBeVisible();
+  await expect(page.getByText("02 OF 02", { exact: true })).toBeVisible();
 
   for (const viewport of [{ width: 1830, height: 1167 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     const bounds = await page.evaluate(() => {
       const panel = document.querySelector<HTMLElement>(".daily-panel")?.getBoundingClientRect();
       const card = document.querySelector<HTMLElement>(".result-share-card")?.getBoundingClientRect();
-      const back = [...document.querySelectorAll<HTMLButtonElement>("button")].find((button) => button.textContent?.trim() === "返回")?.getBoundingClientRect();
+      const back = [...document.querySelectorAll<HTMLButtonElement>("button")].find((button) => button.textContent?.trim() === "返回第一页")?.getBoundingClientRect();
       return { documentHeight: document.documentElement.scrollHeight, viewportHeight: window.innerHeight, panel, card, back };
     });
 

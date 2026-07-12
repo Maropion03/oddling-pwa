@@ -143,13 +143,14 @@ export function HomeView() {
                       <motion.div
                         key="page1"
                         className="daily-archive-page"
-                        initial={{ x: -40, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -40, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
+                        initial={{ rotateY: -82, x: -28, opacity: 0 }}
+                        animate={{ rotateY: 0, x: 0, opacity: 1 }}
+                        exit={{ rotateY: -82, x: -28, opacity: 0 }}
+                        transition={{ duration: 0.34, ease: "easeInOut" }}
+                        style={{ transformOrigin: "left center" }}
                       >
                         <span className="completion-mark"><Check size={26}/></span>
-                        <p className="eyebrow">TODAY IS ARCHIVED</p>
+                        <div className="daily-archive-page__meta"><p className="eyebrow">TODAY IS ARCHIVED</p><span>01 OF 02</span></div>
                         <h2>{plainText(completed.question)}</h2>
                         <blockquote>{completed.answer}</blockquote>
                         <div className="mutation-line"><Sparkles size={18}/><span>新变异</span><strong>{plainText(completed.mutation.label)}</strong></div>
@@ -167,13 +168,15 @@ export function HomeView() {
                       <motion.div
                         key="page2"
                         className="daily-archive-page daily-archive-page--export"
-                        initial={{ x: 40, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 40, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
+                        initial={{ rotateY: 82, x: 28, opacity: 0 }}
+                        animate={{ rotateY: 0, x: 0, opacity: 1 }}
+                        exit={{ rotateY: 82, x: 28, opacity: 0 }}
+                        transition={{ duration: 0.34, ease: "easeInOut" }}
+                        style={{ transformOrigin: "right center" }}
                       >
-                        <ResultImageMaker avatar={avatar} entry={completed}/>
-                        <button className="btn" onClick={() => setArchivePage(1)}>返回</button>
+                        <div className="daily-archive-page__meta"><p className="eyebrow">READY TO POST</p><span>02 OF 02</span></div>
+                        <ResultImageMaker avatar={avatar} entry={completed} compact/>
+                        <button className="btn" onClick={() => setArchivePage(1)}>返回第一页</button>
                       </motion.div>
                     )}
                   </AnimatePresence>

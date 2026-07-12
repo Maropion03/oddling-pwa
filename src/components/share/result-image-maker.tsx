@@ -29,7 +29,7 @@ const flipVariants = {
   exit: { rotateY: -90, opacity: 0, scale: 0.92 },
 };
 
-export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: DailyEntry | null }) {
+export function ResultImageMaker({ avatar, entry, compact = false }: { avatar: Avatar; entry?: DailyEntry | null; compact?: boolean }) {
   const [format, setFormat] = useState<Format>("portrait");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [isFlipping, setIsFlipping] = useState(false);
@@ -65,9 +65,9 @@ export function ResultImageMaker({ avatar, entry }: { avatar: Avatar; entry?: Da
   }
 
   return (
-    <section className="result-image-maker" aria-label="保存分享结果图">
+    <section className={`result-image-maker${compact ? " result-image-maker--compact" : ""}`} aria-label="保存分享结果图">
       <div className="result-image-maker__top">
-        <div><p className="eyebrow">READY TO POST</p><h2>{isDaily ? "把今天的变异带走" : "把第一次见面带走"}</h2></div>
+        {compact ? <span className="result-image-maker__hint">选择图片尺寸</span> : <div><p className="eyebrow">READY TO POST</p><h2>{isDaily ? "把今天的变异带走" : "把第一次见面带走"}</h2></div>}
         <div className="result-format-switch" role="group" aria-label="结果图尺寸">
           <button type="button" aria-pressed={format === "portrait"} disabled={isFlipping} onClick={() => changeFormat("portrait")}><RectangleVertical size={16}/>3:4</button>
           <button type="button" aria-pressed={format === "square"} disabled={isFlipping} onClick={() => changeFormat("square")}><Square size={16}/>1:1</button>
