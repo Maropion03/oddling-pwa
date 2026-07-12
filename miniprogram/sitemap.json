@@ -1,0 +1,9 @@
+{
+  "desc": "Oddling 怪可爱分身",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

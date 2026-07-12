@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { OddlingProvider } from "@/components/providers/oddling-provider";
 import { ServiceWorkerRegistration } from "@/components/providers/service-worker";
+import { WechatAuthHandler } from "@/components/providers/wechat-auth-handler";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
         <OddlingProvider>{children}</OddlingProvider>
+        <WechatAuthHandler />
         <ServiceWorkerRegistration />
       </body>
     </html>
