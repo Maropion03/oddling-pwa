@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="https://oddling-pwa.vercel.app"><strong>立即体验 →</strong></a>
+  <a href="[https://oddling-pwa.vercel.app](https://oddling-pwa-maropions-projects.vercel.app/)"><strong>立即体验 →</strong></a>
 </p>
 
 ---
