@@ -64,7 +64,7 @@ export async function GET() {
       shares,
       questionHistory: entries.map((entry) => ({ date: entry.date, questionId: entry.questionId })),
       rerolls,
-      theme: profileRow.data?.theme ?? "system",
+      theme: profileRow.data?.theme ?? "light",
     };
     return NextResponse.json({ state });
   } catch (error) {

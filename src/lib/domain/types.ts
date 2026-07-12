@@ -143,5 +143,5 @@ export const EMPTY_STATE: AppState = {
   guestInteractions: [],
   questionHistory: [],
   rerolls: {},
-  theme: "system",
+  theme: "light",
 };
