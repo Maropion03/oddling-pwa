@@ -2,4 +2,24 @@ page {
   width: 100vw;
   height: 100vh;
   background: #F3EEDC;
+  color: #202124;
+  font-family: "Arial Rounded MT Bold", "PingFang SC", sans-serif;
 }
+
+button { font: inherit; }
+
+.page { min-height: 100vh; padding: 32rpx 32rpx 56rpx; box-sizing: border-box; }
+.eyebrow { margin: 0 0 16rpx; color: #2B59C3; font-family: monospace; font-size: 22rpx; font-weight: 800; letter-spacing: 2rpx; }
+.title { margin: 0; font-size: 56rpx; font-weight: 900; letter-spacing: -3rpx; line-height: 1; }
+.lede { margin: 18rpx 0 0; color: #55564F; font-size: 28rpx; line-height: 1.65; }
+.button { min-height: 92rpx; display: flex; align-items: center; justify-content: center; gap: 12rpx; padding: 0 28rpx; border: 4rpx solid #202124; border-radius: 20rpx; background: #FFFDF4; box-shadow: 6rpx 6rpx 0 #202124; color: #202124; font-size: 30rpx; font-weight: 850; }
+.button::after { border: 0; }
+.button--primary { background: #FF6F59; }
+.button--blue { background: #2B59C3; color: #FFFDF4; }
+.button--ghost { border-color: transparent; background: transparent; box-shadow: none; }
+.button[disabled] { opacity: .48; }
+.input, .textarea { width: 100%; box-sizing: border-box; border: 4rpx solid #202124; border-radius: 20rpx; background: #FFFDF4; color: #202124; font-size: 30rpx; }
+.input { height: 92rpx; padding: 0 22rpx; }
+.textarea { min-height: 210rpx; padding: 22rpx; line-height: 1.55; }
+.meta { display: flex; justify-content: space-between; margin-top: 12rpx; color: #55564F; font-family: monospace; font-size: 22rpx; }
+.empty { padding: 100rpx 24rpx; color: #55564F; text-align: center; }

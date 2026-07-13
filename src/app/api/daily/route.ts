@@ -9,7 +9,7 @@ import { assertQuery } from "@/lib/supabase/query";
 export async function GET(request: NextRequest) {
   try {
     const query = dailyDateSchema.parse({ date: request.nextUrl.searchParams.get("date"), timezone: request.nextUrl.searchParams.get("timezone") });
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { data: avatar, error: avatarError } = await supabase.from("avatars").select("*").eq("owner_id", user.id).maybeSingle();
     assertQuery(avatarError);
     if (!avatar) throw new ApiError(404, "分身不存在");

@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
     const input = await parseJson(request, createAvatarSchema);
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { data: existing, error: existingError } = await supabase.from("avatars").select("*").eq("owner_id", user.id).maybeSingle();
     assertQuery(existingError);
 

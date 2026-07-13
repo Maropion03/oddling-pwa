@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { apiError } from "@/lib/api/http";
 import { requireUser } from "@/lib/supabase/auth";
 import { assertQuery } from "@/lib/supabase/query";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { data: avatar, error: avatarError } = await supabase.from("avatars").select("*").eq("owner_id", user.id).maybeSingle();
     assertQuery(avatarError);
     const avatarId = avatar?.id ?? "00000000-0000-0000-0000-000000000000";

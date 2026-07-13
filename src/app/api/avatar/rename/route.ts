@@ -8,7 +8,7 @@ export async function PATCH(request: NextRequest) {
   try {
     assertSameOrigin(request);
     const { name } = await parseJson(request, renameAvatarSchema);
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { error } = await supabase.from("avatars").update({ name, updated_at: new Date().toISOString() }).eq("owner_id", user.id);
     assertQuery(error, "改名失败");
     return NextResponse.json({ name });

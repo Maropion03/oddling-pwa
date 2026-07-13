@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { apiError, assertSameOrigin, parseJson } from "@/lib/api/http";
+import { apiError, parseJson } from "@/lib/api/http";
 import { guestInteractionSchema } from "@/lib/api/schemas";
 import { createGuestInteraction } from "@/lib/domain/engine";
 import type { ShareRecord } from "@/lib/domain/types";
@@ -11,7 +11,6 @@ import { assertQuery } from "@/lib/supabase/query";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
-    assertSameOrigin(request);
     const { token } = await params;
     const input = await parseJson(request, guestInteractionSchema);
     const admin = createSupabaseAdminClient();

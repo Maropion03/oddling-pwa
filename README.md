@@ -84,6 +84,18 @@ Oddling 是 PWA，无需提交商店审核：
 - **Android**：Chrome 打开 → 安装应用
 - **桌面**：Chrome / Edge 地址栏右侧 → 安装
 
+## 原生微信小程序
+
+原生小程序代码位于 `miniprogram/`，不再使用网页套壳。它复用同一套 Supabase 数据、每日变异和公开分享接口，并通过微信登录换取独立的小程序会话。
+
+在微信开发者工具中导入 `miniprogram/` 后，用项目中的 AppID 预览。首次真机联调前需确认：
+
+- 在微信公众平台将 `https://oddling-pwa.vercel.app` 加入 `request` 合法域名；如平台不接受 Vercel 别名，先绑定自有 HTTPS 域名，再将 `miniprogram/utils/api.js` 的 `BASE_URL` 切换到该域名。
+- 将 `supabase/migrations/20260712160000_add_wechat_openid.sql` 应用到生产 Supabase；否则微信账号无法建立资料。
+- Vercel Production 已需要 `WECHAT_APPID`、`WECHAT_APPSECRET`、`WECHAT_AUTH_PEPPER` 与 Supabase 环境变量。密钥只在部署平台配置，不写入小程序或仓库。
+
+小程序包含创建角色、每日回答/变异、贴纸册、发布卡片保存、微信卡片分享与好友互动、分享管理、数据导出和账号删除。发布卡片和文件导出依赖用户授予相册/文件分享能力，需在真机完成最终验收。
+
 ---
 
 ## 技术栈

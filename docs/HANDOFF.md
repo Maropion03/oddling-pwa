@@ -1,12 +1,12 @@
 # Oddling 交接
 
-更新于 2026-07-12
+更新于 2026-07-13
 
 ## 当前状态
 
 - 分支：`main`
-- HEAD：`36db5fb feat: 微信小程序套壳 + 微信静默登录`
-- 工作区：交接时干净
+- HEAD：待提交：原生微信小程序与小程序令牌认证
+- 工作区：有未提交的原生小程序开发改动
 - 生产：`https://oddling-pwa.vercel.app`
 - 最近确认的 Vercel production 部署：`https://oddling-19iw33dw0-maropions-projects.vercel.app` 状态 Ready
 
@@ -41,8 +41,10 @@ Oddling 当前是一个由每日一句话驱动的数字分身养成玩具。用
 ### 图标与微信入口
 
 - 浏览器 favicon 已改为 Oddling 吉祥物，和 PWA 图标一致
-- `36db5fb` 同时加入微信小程序壳、微信静默登录接口与数据库迁移
-- 这些微信改动来自当前用户工作流，继续修改前先确认实际微信 AppID、回调域名和生产数据库配置
+- 原来的 `web-view` 小程序壳已替换为原生页面：创建、每日回答、结果/发布卡片、贴纸册、设置、公开互动
+- 小程序用 `wx.login` 调用 `/api/miniprogram/auth/login`，后端基于 OpenID 创建独立 Supabase 账号，并向原有 API 传 Bearer token
+- 原 `/api/wechat-auth` 已下线并返回 410，避免网页套壳继续使用旧路径
+- 小程序无须网页回调域名，但微信公众平台仍需配置请求合法域名
 
 ## 关键提交
 
@@ -54,6 +56,7 @@ Oddling 当前是一个由每日一句话驱动的数字分身养成玩具。用
 | `6204675` | 固定桌面导出页容器，避免纵向滚动 |
 | `206a189` | 导出结果第二页和 READY TO POST 翻页体验 |
 | `36db5fb` | 微信小程序、微信静默登录和 Oddling favicon |
+| 待提交 | 原生小程序替代网页套壳、Bearer API 鉴权、小程序会话刷新、发布卡片/导出/分享管理 |
 
 ## 验证方式
 
@@ -68,6 +71,13 @@ npm run test:production
 ```
 
 注意：`test:production` 会在生产环境创建临时账号和数据，最后调用删除接口清理。需要已配置的 Supabase 和生产登录环境。
+
+## 原生小程序上线前置条件
+
+- 生产 Supabase 必须执行 `supabase/migrations/20260712160000_add_wechat_openid.sql`。本机迁移校验已通过，但当前环境缺少 Supabase CLI 的生产访问令牌，尚未对远端执行，不能把这一步当作已完成。
+- Vercel Production 需要 `WECHAT_APPID`、`WECHAT_APPSECRET`、`WECHAT_AUTH_PEPPER`。密钥不得放进小程序代码或 Git。
+- 在微信公众平台配置 `https://oddling-pwa.vercel.app` 为 request 合法域名；若 Vercel 别名不被接受，应先绑定自有 HTTPS 域名并更新 `miniprogram/utils/api.js`。
+- 本机未安装微信开发者工具，因此已完成静态 JS/JSON 和 Web API 构建验证；发布卡片保存、相册授权、文件分享和真机微信登录仍需在开发者工具与真机逐项验收。
 
 ## 视频内容待继续
 

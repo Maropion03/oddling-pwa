@@ -5,6 +5,7 @@ import { ZodError, type ZodType } from "zod";
 import { ApiError } from "@/lib/supabase/auth";
 
 export function assertSameOrigin(request: NextRequest) {
+  if (/^Bearer\s+.+/i.test(request.headers.get("authorization") ?? "")) return;
   const origin = request.headers.get("origin");
   if (origin && origin !== request.nextUrl.origin) throw new ApiError(403, "请求来源不合法");
 }

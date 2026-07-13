@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { apiError } from "@/lib/api/http";
 import { DAILY_QUESTIONS } from "@/lib/domain/questions";
 import { EMPTY_STATE, type AppState, type DailyEntry, type Mutation, type ShareRecord } from "@/lib/domain/types";
@@ -6,9 +6,9 @@ import { requireUser } from "@/lib/supabase/auth";
 import { avatarFromRow, snapshotFromRow, stickerFromRow } from "@/lib/supabase/mappers";
 import { assertQuery } from "@/lib/supabase/query";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { data: avatarRow, error: avatarError } = await supabase.from("avatars").select("*").eq("owner_id", user.id).maybeSingle();
     assertQuery(avatarError);
     if (!avatarRow) return NextResponse.json({ state: EMPTY_STATE });

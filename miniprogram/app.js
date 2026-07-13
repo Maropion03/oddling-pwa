@@ -1,8 +1,7 @@
 App({
-  onLaunch() {
-    console.log("Oddling miniprogram launched");
-  },
   globalData: {
-    webviewUrl: "",
+    state: null,
+    todayQuestion: null,
+    lastEntry: null,
   },
 });

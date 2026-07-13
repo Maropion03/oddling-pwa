@@ -1,9 +1,14 @@
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
 
-const migrationUrl = new URL("../supabase/migrations/20260710150000_initial_schema.sql", import.meta.url);
-const original = await readFile(migrationUrl, "utf8");
-const migration = original.replace("create extension if not exists pgcrypto;", "");
+const migrationUrls = [
+  "../supabase/migrations/20260710150000_initial_schema.sql",
+  "../supabase/migrations/20260712160000_add_wechat_openid.sql",
+  "../supabase/migrations/20260712170000_default_profile_theme_light.sql",
+].map((path) => new URL(path, import.meta.url));
+const migration = (await Promise.all(migrationUrls.map((url) => readFile(url, "utf8"))))
+  .map((source) => source.replace("create extension if not exists pgcrypto;", ""))
+  .join("\n");
 const db = new PGlite();
 
 try {
@@ -46,6 +51,10 @@ try {
       '{"energy":50,"softness":50,"order":50,"social":50,"oddness":50}',
       '{"body":"bean","eyes":"dot","mouth":"smile","head":null,"back":null,"textures":["dots"],"handheld":null}');
   `);
+  const profile = await db.query(`select theme, wechat_openid from public.profiles where id = '${ownerId}'`);
+  if (profile.rows[0]?.theme !== "light" || profile.rows[0]?.wechat_openid !== null) {
+    throw new Error(`Profile defaults are invalid: ${JSON.stringify(profile.rows[0])}`);
+  }
 
   let rejectedOtherOwner = false;
   try {
@@ -79,7 +88,7 @@ try {
     throw new Error(`Atomic daily write failed: ${JSON.stringify(result)}`);
   }
 
-  console.log(`Migration verified: ${actualTables.length} tables, owner RLS enforced, daily RPC atomic.`);
+  console.log(`Migrations verified: ${actualTables.length} tables, profile defaults, owner RLS, and daily RPC atomic.`);
 } finally {
   await db.close();
 }

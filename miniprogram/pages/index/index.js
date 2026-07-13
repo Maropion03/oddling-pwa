@@ -1,47 +1,16 @@
-const WEB_APP_URL = "https://oddling-pwa.vercel.app";
+const api = require("../../utils/api");
+const store = require("../../utils/store");
 
 Page({
-  data: {
-    webviewUrl: "",
-  },
-
-  onLoad() {
-    const app = getApp();
-    if (app.globalData.webviewUrl) {
-      this.setData({ webviewUrl: app.globalData.webviewUrl });
-      return;
-    }
-
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          const url = `${WEB_APP_URL}/?wxcode=${encodeURIComponent(res.code)}`;
-          app.globalData.webviewUrl = url;
-          this.setData({ webviewUrl: url });
-        } else {
-          this.setData({ webviewUrl: WEB_APP_URL });
-        }
-      },
-      fail: () => {
-        this.setData({ webviewUrl: WEB_APP_URL });
-      },
-    });
-  },
-
-  onMessage(event) {
-    const { data } = event.detail;
-    if (!Array.isArray(data)) return;
-    for (const item of data) {
-      if (item.action === "share") {
-        wx.showShareMenu({ withShareTicket: true });
-      }
+  async onLoad() {
+    try {
+      await api.ensureSession();
+      const state = await store.loadState();
+      wx.reLaunch({ url: state.avatar ? "/pages/home/home" : "/pages/create/create" });
+    } catch (error) {
+      this.setData({ error: error.message || "登录失败" });
     }
   },
-
-  onShareAppMessage() {
-    return {
-      title: "Oddling 怪可爱分身",
-      path: "/pages/index/index",
-    };
-  },
+  data: { error: "" },
+  retry() { wx.reLaunch({ url: "/pages/index/index" }); },
 });

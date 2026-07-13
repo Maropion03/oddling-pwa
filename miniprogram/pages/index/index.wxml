@@ -1,1 +1,1 @@
-<web-view src="{{webviewUrl}}" bindmessage="onMessage" />
+<view class="launch"><view class="launch__mark">o</view><text class="launch__word">Oddling</text><text wx:if="{{!error}}" class="launch__hint">正在寻找你的分身</text><text wx:else class="launch__error">{{error}}</text><button wx:if="{{error}}" class="button button--primary" bindtap="retry">重新登录</button></view>

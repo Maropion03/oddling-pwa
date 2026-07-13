@@ -1,11 +1,30 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/create/create",
+    "pages/home/home",
+    "pages/result/result",
+    "pages/album/album",
+    "pages/me/me",
+    "pages/share/share"
   ],
   "window": {
-    "navigationStyle": "custom",
+    "navigationBarBackgroundColor": "#F3EEDC",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Oddling",
     "backgroundColor": "#F3EEDC",
     "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#55564F",
+    "selectedColor": "#2B59C3",
+    "backgroundColor": "#FFFDF4",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "巢穴" },
+      { "pagePath": "pages/album/album", "text": "贴纸册" },
+      { "pagePath": "pages/me/me", "text": "我的" }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

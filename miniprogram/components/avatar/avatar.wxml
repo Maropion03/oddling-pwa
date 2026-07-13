@@ -1,0 +1,11 @@
+<view class="avatar avatar--{{size}} avatar--{{body}} avatar--{{color}}" role="img" aria-label="{{name}} 的怪可爱分身">
+  <view class="avatar__back avatar__back--{{back}}"></view>
+  <view class="avatar__head avatar__head--{{head}}"></view>
+  <view class="avatar__body">
+    <view class="avatar__eye avatar__eye--left avatar__eye--{{eyes}}"></view>
+    <view class="avatar__eye avatar__eye--right avatar__eye--{{eyes}}"></view>
+    <view class="avatar__mouth avatar__mouth--{{mouth}}"></view>
+    <view class="avatar__texture {{texture}}"></view>
+    <view class="avatar__handheld" wx:if="{{hasHandheld}}"></view>
+  </view>
+</view>

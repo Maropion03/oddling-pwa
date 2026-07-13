@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     assertSameOrigin(request);
     const input = await parseJson(request, rerollSchema);
-    const { user, supabase } = await requireUser();
+    const { user, supabase } = await requireUser(request);
     const { data: avatar, error: avatarError } = await supabase.from("avatars").select("id,seed").eq("owner_id", user.id).single();
     assertQuery(avatarError);
     if (!avatar) throw new ApiError(404, "分身不存在");

@@ -51,6 +51,24 @@ describe("API route guards", () => {
     expect(response.status).toBe(503);
   });
 
+  it("accepts a bearer-authenticated mini program mutation before the same-origin check", async () => {
+    const { POST } = await import("./avatar/create/route");
+    const request = new NextRequest("http://localhost:3000/api/avatar/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "https://servicewechat.com", Authorization: "Bearer mini-token" },
+      body: JSON.stringify({
+        choices: [
+          { questionId: "shelter", optionId: "blanket" },
+          { questionId: "signal", optionId: "reply" },
+          { questionId: "gift", optionId: "seed" },
+        ],
+        freeText: "留下一点勇气",
+      }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(503);
+  });
+
   it("rejects malformed public share tokens", async () => {
     const { GET } = await import("./public/shares/[token]/route");
     const response = await GET(new Request("http://localhost:3000"), { params: Promise.resolve({ token: "../secret" }) });
